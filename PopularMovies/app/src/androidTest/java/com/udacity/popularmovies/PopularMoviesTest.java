@@ -67,7 +67,7 @@ public class PopularMoviesTest {
         assertEquals(String.format("TEST_ORIGINAL_TITLE_%d", random), popularMovie.originalTitle);
         assertEquals(String.format("TEST_POSTER_PATH_%d", random), popularMovie.posterPath);
         assertEquals(String.format("TEST_OVERVIEW_%d", random), popularMovie.overview);
-        assertEquals(Integer.valueOf(random), popularMovie.voteAverage);
+        assertEquals(Double.valueOf((double) random), popularMovie.voteAverage);
         assertEquals(String.format("TEST_RELEASE_DATE_%d", random), popularMovie.releaseDate);
     }
 
@@ -100,7 +100,7 @@ public class PopularMoviesTest {
             popularMovie.originalTitle = String.format("TEST_ORIGINAL_TITLE_%d", id);
             popularMovie.posterPath = String.format("TEST_POSTER_PATH_%d", id);
             popularMovie.overview = String.format("TEST_OVERVIEW_%d", id);
-            popularMovie.voteAverage = id;
+            popularMovie.voteAverage = (double) id;
             popularMovie.releaseDate = String.format("TEST_RELEASE_DATE_%d", id);
 
             popularMovieList.add(popularMovie);

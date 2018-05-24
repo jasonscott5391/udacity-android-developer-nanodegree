@@ -7,7 +7,7 @@ import com.squareup.picasso.Picasso;
 public class PopularMoviesUtils {
 
     public static final String BASE_MOVIE_DB_URL = "http://image.tmdb.org/t/p/";
-    public static final String DEFAULT_POSTER_WIDTH = "w185";
+    public static final String DEFAULT_POSTER_WIDTH = "w500";
 
 
     public static void loadNetworkImageIntoView(String imageUrl, ImageView imageView) {

@@ -7,24 +7,24 @@ import android.support.annotation.NonNull;
 
 import com.udacity.popularmovies.data.PopularMovie;
 import com.udacity.popularmovies.data.PopularMovieDatabase;
+import com.udacity.popularmovies.data.PopularMoviesRepository;
 
 import java.util.List;
 
 public class PopularMoviesViewModel extends AndroidViewModel {
 
-    private final LiveData<List<PopularMovie>> mPopularMovieList;
-
-    private PopularMovieDatabase mPopularMovieDatabase;
+    private LiveData<List<PopularMovie>> mPopularMovieList;
+    private PopularMoviesRepository mPopularMoviesRepository;
 
     public PopularMoviesViewModel(@NonNull Application application) {
         super(application);
-
-        mPopularMovieDatabase = PopularMovieDatabase.getInstance(this.getApplication());
-
-        mPopularMovieList = mPopularMovieDatabase.popularMovie().selectAll();
+        PopularMovieDatabase popularMovieDatabase = PopularMovieDatabase.getInstance(this.getApplication());
+        mPopularMoviesRepository = PopularMoviesRepository.getInstance(popularMovieDatabase.popularMovie());
+        mPopularMovieList = mPopularMoviesRepository.getPopularMovies();
     }
 
     public LiveData<List<PopularMovie>> getPopularMovieList() {
         return mPopularMovieList;
     }
+
 }

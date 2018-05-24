@@ -38,11 +38,10 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdap
     @Override
     public void onBindViewHolder(@NonNull PopularMoviesViewHolder holder, int position) {
         PopularMovie popularMovie = mPopularMovieList.get(position);
-        holder.mImageView.setImageResource(R.drawable.interstellar);
-//        PopularMoviesUtils.loadNetworkImageIntoView(
-//                PopularMoviesUtils.buildPosterImageUrl(
-//                        popularMovie.posterPath),
-//                holder.mImageView);
+        PopularMoviesUtils.loadNetworkImageIntoView(
+                PopularMoviesUtils.buildPosterImageUrl(
+                        popularMovie.posterPath),
+                holder.mImageView);
     }
 
     @Override
