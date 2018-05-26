@@ -7,17 +7,17 @@ import android.arch.persistence.room.PrimaryKey;
 import com.google.gson.annotations.SerializedName;
 
 import static com.udacity.popularmovies.data.Movie.COLUMN_MOVIE_DB_ID;
-import static com.udacity.popularmovies.data.PopularMovie.POPULAR_MOVIES_TABLE_NAME;
+import static com.udacity.popularmovies.data.TopRatedMovie.TOP_RATED_MOVIES_TABLE_NAME;
 
-@Entity(tableName = POPULAR_MOVIES_TABLE_NAME)
-public class PopularMovie {
+@Entity(tableName = TOP_RATED_MOVIES_TABLE_NAME)
+public class TopRatedMovie {
 
-    public static final String POPULAR_MOVIES_TABLE_NAME = "popular_movies";
-    public static final String COLUMN_POPULAR_MOVIE_ID = "popular_movie_id";
+    public static final String TOP_RATED_MOVIES_TABLE_NAME = "top_rated_movies";
+    public static final String COLUMN_TOP_RATED_MOVIE_ID = "top_rated_movie_id";
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(index = true, name = COLUMN_POPULAR_MOVIE_ID)
-    public Long popularMovieId;
+    @ColumnInfo(index = true, name = COLUMN_TOP_RATED_MOVIE_ID)
+    public Long topRatedMovieId;
 
     @ColumnInfo(index = true, name = COLUMN_MOVIE_DB_ID)
     @SerializedName(COLUMN_MOVIE_DB_ID)

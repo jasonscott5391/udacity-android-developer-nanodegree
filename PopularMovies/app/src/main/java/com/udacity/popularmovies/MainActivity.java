@@ -6,34 +6,34 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.udacity.popularmovies.viewmodel.PopularMoviesViewModel;
+import com.udacity.popularmovies.viewmodel.MoviesViewModel;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements PopularMoviesAdapter.PopularMoviesClickHandler {
+public class MainActivity extends AppCompatActivity implements MoviesAdapter.PopularMoviesClickHandler {
 
     private static final int SPAN_COUNT = 2;
 
-    private PopularMoviesViewModel mViewModel;
+    private MoviesViewModel mViewModel;
     private RecyclerView mRecyclerView;
     private GridLayoutManager mGridLayoutManager;
-    private PopularMoviesAdapter mPopularMoviesAdapter;
+    private MoviesAdapter mMoviesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = findViewById(R.id.popular_movies_recycler_view);
+        mRecyclerView = findViewById(R.id.movies_recycler_view);
         mGridLayoutManager = new GridLayoutManager(this, SPAN_COUNT);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mPopularMoviesAdapter = new PopularMoviesAdapter(this, this, new ArrayList<>());
-        mRecyclerView.setAdapter(mPopularMoviesAdapter);
-        mViewModel = ViewModelProviders.of(this).get(PopularMoviesViewModel.class);
+        mMoviesAdapter = new MoviesAdapter(this, this, new ArrayList<>());
+        mRecyclerView.setAdapter(mMoviesAdapter);
+        mViewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
 
-        mViewModel.getPopularMovieList().observe(MainActivity.this, popularMovies -> mPopularMoviesAdapter.swapPopularMovies(popularMovies));
+        mViewModel.getMoviesList().observe(MainActivity.this, movies -> mMoviesAdapter.swapMovies(movies));
     }
 
     @Override
