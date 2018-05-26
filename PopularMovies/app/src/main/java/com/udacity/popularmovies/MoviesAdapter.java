@@ -8,53 +8,53 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.udacity.popularmovies.data.PopularMovie;
+import com.udacity.popularmovies.data.MovieDao;
 import com.udacity.popularmovies.utils.PopularMoviesUtils;
 
 import java.util.List;
 
-public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdapter.PopularMoviesViewHolder> {
+public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.PopularMoviesViewHolder> {
 
     private final Context mContext;
     private final PopularMoviesClickHandler mClickHandler;
 
-    private List<PopularMovie> mPopularMovieList;
+    private List<MovieDao.BaseMovie> mMovieList;
 
-    public PopularMoviesAdapter(@NonNull Context mContext, PopularMoviesClickHandler clickHandler, List<PopularMovie> popularMovieList) {
+    public MoviesAdapter(@NonNull Context mContext, PopularMoviesClickHandler clickHandler, List<MovieDao.BaseMovie> movieList) {
         this.mContext = mContext;
         this.mClickHandler = clickHandler;
-        this.mPopularMovieList = popularMovieList;
+        this.mMovieList = movieList;
     }
 
     @NonNull
     @Override
     public PopularMoviesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(mContext).inflate(R.layout.popular_movie_grid_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.movie_grid_item, parent, false);
 
         return new PopularMoviesViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull PopularMoviesViewHolder holder, int position) {
-        PopularMovie popularMovie = mPopularMovieList.get(position);
+        MovieDao.BaseMovie baseMovie = mMovieList.get(position);
         PopularMoviesUtils.loadNetworkImageIntoView(
                 PopularMoviesUtils.buildPosterImageUrl(
-                        popularMovie.posterPath),
+                        baseMovie.posterPath),
                 holder.mImageView);
     }
 
     @Override
     public int getItemCount() {
-        return  mPopularMovieList.size();
+        return  mMovieList.size();
     }
 
     public interface PopularMoviesClickHandler {
         void onClick(long id);
     }
 
-    public void swapPopularMovies(List<PopularMovie> popularMovies) {
-        this.mPopularMovieList = popularMovies;
+    public void swapMovies(List<MovieDao.BaseMovie> movieList) {
+        this.mMovieList = movieList;
         notifyDataSetChanged();
     }
 
@@ -65,13 +65,13 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdap
         public PopularMoviesViewHolder(@NonNull View view) {
             super(view);
 
-            mImageView = view.findViewById(R.id.popular_movies_image_view);
+            mImageView = view.findViewById(R.id.movie_image_view);
             view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            mClickHandler.onClick(mPopularMovieList.get(getAdapterPosition()).id);
+            mClickHandler.onClick(mMovieList.get(getAdapterPosition()).id);
         }
     }
 }
