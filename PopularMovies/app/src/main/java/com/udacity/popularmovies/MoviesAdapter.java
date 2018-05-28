@@ -3,6 +3,7 @@ package com.udacity.popularmovies;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +12,12 @@ import android.widget.ImageView;
 import com.udacity.popularmovies.data.MovieDao;
 import com.udacity.popularmovies.utils.PopularMoviesUtils;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.PopularMoviesViewHolder> {
+
+    private static final String TAG = MoviesAdapter.class.getSimpleName();
 
     private final Context mContext;
     private final PopularMoviesClickHandler mClickHandler;
@@ -46,7 +50,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.PopularMov
 
     @Override
     public int getItemCount() {
-        return  mMovieList.size();
+        return mMovieList.size();
     }
 
     public interface PopularMoviesClickHandler {
@@ -54,6 +58,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.PopularMov
     }
 
     public void swapMovies(List<MovieDao.BaseMovie> movieList) {
+        Log.d(TAG, String.format("swapMovies - this.movieList:%s, movieList:%s", Arrays.toString(this.mMovieList.toArray()), Arrays.toString(movieList.toArray())));
         this.mMovieList = movieList;
         notifyDataSetChanged();
     }

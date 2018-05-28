@@ -1,31 +1,30 @@
 package com.udacity.popularmovies.repository;
 
-import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
+import android.util.Log;
 
 import com.udacity.popularmovies.data.MovieDao;
 import com.udacity.popularmovies.sync.MovieSyncUtils;
 
 import java.util.List;
 
-import static com.udacity.popularmovies.sync.MovieSyncTask.POPULAR_MOVIES;
-import static com.udacity.popularmovies.sync.MovieSyncTask.TOP_RATED_MOVIES;
-
 public class MovieRepository {
+    private static final String TAG = MovieRepository.class.getSimpleName();
+    private static MutableLiveData<List<MovieDao.BaseMovie>> sMovieList;
 
-    public static LiveData<List<MovieDao.BaseMovie>> getMovies(Context context, MovieDao movieDao, String preference) {
-
+    public static void init(Context context, String preference) {
+        Log.d(TAG, String.format("getMovies() - preference:%s", preference));
+        sMovieList = new MutableLiveData<>();
         MovieSyncUtils.startImmediateSync(context, preference);
+    }
 
-        switch (preference) {
-            case POPULAR_MOVIES:
-                return movieDao.getPopularMovies();
+    public static MutableLiveData<List<MovieDao.BaseMovie>> getMovies() {
+        return sMovieList;
+    }
 
-            case TOP_RATED_MOVIES:
-                return movieDao.getTopRatedMovies();
-
-            default:
-                throw new UnsupportedOperationException(String.format("Operation %s is unsupported!", preference));
-        }
+    public static void updateMovies(Context context, String preference) {
+        Log.d(TAG, String.format("getMovies() - preference:%s", preference));
+        MovieSyncUtils.startImmediateSync(context, preference);
     }
 }

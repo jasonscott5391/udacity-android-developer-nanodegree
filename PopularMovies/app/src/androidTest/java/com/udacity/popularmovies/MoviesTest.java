@@ -1,10 +1,7 @@
 package com.udacity.popularmovies;
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.persistence.room.Room;
-import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -23,11 +20,8 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 @RunWith(AndroidJUnit4.class)
 public class MoviesTest {
@@ -79,9 +73,9 @@ public class MoviesTest {
     }
 
     @Test
-    public void testSelectPopularMovies() throws InterruptedException {
+    public void testSelectPopularMovies() {
         insertMovies(TEST_NUM_MOVIES);
-        List<MovieDao.BaseMovie> popularMovieList = getValue(mMovieDatabase.movies().getPopularMovies());
+        List<MovieDao.BaseMovie> popularMovieList = mMovieDatabase.movies().getPopularMovies();
         for (int i = 0; i < TEST_NUM_MOVIES; i++) {
             if (i % 2 == 0) {
                 MovieDao.BaseMovie popularMovie = popularMovieList.remove(0);
@@ -93,9 +87,9 @@ public class MoviesTest {
     }
 
     @Test
-    public void testSelectTopRatedMovies() throws InterruptedException {
+    public void testSelectTopRatedMovies() {
         insertMovies(TEST_NUM_MOVIES);
-        List<MovieDao.BaseMovie> topRatedMovieList = getValue(mMovieDatabase.movies().getTopRatedMovies());
+        List<MovieDao.BaseMovie> topRatedMovieList = mMovieDatabase.movies().getTopRatedMovies();
         for (int i = 0; i < TEST_NUM_MOVIES; i++) {
             if (i % 2 != 0) {
                 MovieDao.BaseMovie topRatedMovie = topRatedMovieList.remove(0);
@@ -145,20 +139,4 @@ public class MoviesTest {
         return new Random().nextInt((max - min) + 1) + min;
     }
 
-
-    private static <T> T getValue(final LiveData<T> liveData) throws InterruptedException {
-        final Object[] value = new Object[1];
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        Observer<T> observer = new Observer<T>() {
-            @Override
-            public void onChanged(@Nullable T t) {
-                value[0] = t;
-                countDownLatch.countDown();
-                liveData.removeObserver(this);
-            }
-        };
-        liveData.observeForever(observer);
-        countDownLatch.await(2, TimeUnit.SECONDS);
-        return (T) value[0];
-    }
 }

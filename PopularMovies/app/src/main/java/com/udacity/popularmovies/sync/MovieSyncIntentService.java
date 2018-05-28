@@ -3,13 +3,15 @@ package com.udacity.popularmovies.sync;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.udacity.popularmovies.data.MovieDatabase;
 
 public class MovieSyncIntentService extends IntentService {
 
     public static final String PREFERENCE_KEY = "preference";
-    private static final String MOVIE_SYNC_INTENT_SERVICE = "MovieSyncIntentService";
+    private static final String MOVIE_SYNC_INTENT_SERVICE = MovieSyncIntentService.class.getSimpleName();
+    private static final String TAG = MovieSyncIntentService.class.getSimpleName();
 
     public MovieSyncIntentService() {
         super(MOVIE_SYNC_INTENT_SERVICE);
@@ -22,6 +24,9 @@ public class MovieSyncIntentService extends IntentService {
         MovieDatabase movieDatabase = MovieDatabase.getInstance(this.getApplication());
 
         String preference = intent.getStringExtra(PREFERENCE_KEY);
+
+        Log.d(TAG, String.format("onHandleIntent - intent:%s, preference:%s", intent, preference));
+
         switch (preference) {
             case MovieSyncTask.POPULAR_MOVIES:
                 MovieSyncTask.syncPopularMovies(movieDatabase.movies());

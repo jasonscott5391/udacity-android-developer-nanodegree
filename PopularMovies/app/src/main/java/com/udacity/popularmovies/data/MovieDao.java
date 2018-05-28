@@ -1,6 +1,5 @@
 package com.udacity.popularmovies.data;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -45,7 +44,7 @@ public interface MovieDao {
             + " INNER JOIN " + Movie.MOVIES_TABLE_NAME
             + " ON (" + Movie.MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + " = " + PopularMovie.POPULAR_MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + ")"
             + " ORDER BY " + PopularMovie.COLUMN_POPULAR_MOVIE_ID + " ASC")
-    LiveData<List<BaseMovie>> getPopularMovies();
+    List<BaseMovie> getPopularMovies();
 
     @Query("SELECT "
             + Movie.MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + " AS id, "
@@ -54,7 +53,7 @@ public interface MovieDao {
             + " INNER JOIN " + Movie.MOVIES_TABLE_NAME
             + " ON (" + Movie.MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + " = " + TopRatedMovie.TOP_RATED_MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + ")"
             + " ORDER BY " + TopRatedMovie.COLUMN_TOP_RATED_MOVIE_ID + " ASC")
-    LiveData<List<BaseMovie>> getTopRatedMovies();
+    List<BaseMovie> getTopRatedMovies();
 
     class BaseMovie {
         public Long id;
