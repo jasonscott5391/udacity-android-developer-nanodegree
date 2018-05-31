@@ -7,10 +7,12 @@ import android.arch.persistence.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
+import static com.udacity.popularmovies.data.Movie.COLUMN_MOVIE_DB_ID;
 import static com.udacity.popularmovies.data.Movie.COLUMN_POSTER_PATH;
 import static com.udacity.popularmovies.data.Movie.MOVIES_TABLE_NAME;
 
-@Entity(tableName = MOVIES_TABLE_NAME, indices = {@Index(value = {COLUMN_POSTER_PATH})})
+@Entity(tableName = MOVIES_TABLE_NAME, indices = {@Index(value = {COLUMN_POSTER_PATH}),
+        @Index(value = {COLUMN_MOVIE_DB_ID}, unique = true)})
 public class Movie {
 
     public static final String MOVIES_TABLE_NAME = "movies";
@@ -26,7 +28,7 @@ public class Movie {
     @ColumnInfo(index = true, name = COLUMN_MOVIE_ID)
     public Long movieId;
 
-    @ColumnInfo(index = true, name = COLUMN_MOVIE_DB_ID)
+    @ColumnInfo(name = COLUMN_MOVIE_DB_ID)
     @SerializedName(COLUMN_MOVIE_DB_ID)
     public Long id;
 

@@ -19,7 +19,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-class MovieSyncTask {
+public class MovieSyncTask {
 
     private static final String TAG = MovieSyncTask.class.getSimpleName();
     private static final String API_KEY = "";
@@ -27,10 +27,10 @@ class MovieSyncTask {
     private static final long API_REQUEST_SLEEP = 500L;
     private static final int DEFAULT_MAX_PAGES = 5;
 
-    static final String POPULAR_MOVIES = "popular";
-    static final String TOP_RATED_MOVIES = "top_rated";
+    public static final String POPULAR_MOVIES = "popular";
+    public static final String TOP_RATED_MOVIES = "top_rated";
 
-    private static final MovieDbService sMmovieDbService = new Retrofit.Builder()
+    private static final MovieDbService sMovieDbService = new Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build().create(MovieDbService.class);
@@ -38,16 +38,18 @@ class MovieSyncTask {
     static synchronized void syncPopularMovies(MovieDao movieDao) {
         try {
 
+            long start = System.currentTimeMillis();
+
             int maxPage = DEFAULT_MAX_PAGES;
             for (int i = 1; i <= maxPage; i++) {
 
                 Log.d(TAG, String.format("syncPopularMovies - Preparing request for popular movie: page:%d, maxPage:%d", i, maxPage));
-                Response response = sMmovieDbService.getMovies(POPULAR_MOVIES, API_KEY, i).execute();
+                Response response = sMovieDbService.getMovies(POPULAR_MOVIES, API_KEY, i).execute();
                 Log.d(TAG, String.format("syncPopularMovies - Popular movies response: code:%s, body:%s, errorBody:%s", response.code(), response.body(), response.errorBody()));
                 MoviesWrapper moviesWrapper = (MoviesWrapper) response.body();
 
                 if (moviesWrapper == null) {
-                    return;
+                    throw new IOException("Null response!");
                 }
 
                 if (maxPage > moviesWrapper.getTotalPages()) {
@@ -57,15 +59,13 @@ class MovieSyncTask {
                 List<PopularMovie> popularMovieList = new ArrayList<>();
                 List<Movie> movieList = moviesWrapper.getMovieList();
                 for (Movie movie : movieList) {
-                    if (movieDao.getMovieCountById(movie.id) == 0) {
-                        Log.d(TAG, String.format("syncPopularMovies - Inserting movie: id:%d", movie.id));
-                        movieDao.insertMovie(movie);
-                    }
-                    // Insert popular movie
                     PopularMovie popularMovie = new PopularMovie();
                     popularMovie.id = movie.id;
                     popularMovieList.add(popularMovie);
                 }
+
+                Log.d(TAG, String.format("syncPopularMovies - Inserting movies: movieList:%s", Arrays.toString(movieList.toArray())));
+                movieDao.insertMovies(movieList);
 
                 Log.d(TAG, String.format("syncPopularMovies - Inserting popular movies: popularMovieList:%s", Arrays.toString(popularMovieList.toArray())));
                 movieDao.insertPopularMovies(popularMovieList);
@@ -74,8 +74,15 @@ class MovieSyncTask {
                 Thread.sleep(API_REQUEST_SLEEP);
             }
 
+            long end = System.currentTimeMillis();
+
+            long timeTakenMs = end - start;
+
+            Log.d(TAG, String.format("20 batch movie insert, 20 batch popular movie insert, & maxPage of %d:(end - start) = timeTakenMs -> (%d - %d) = %d MS = %d S", maxPage, end, start, timeTakenMs, (timeTakenMs / 1000)));
+
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            MovieRepository.getMovies().postValue(null);
+            Log.e(TAG, e.getMessage());
         }
 
     }
@@ -83,16 +90,18 @@ class MovieSyncTask {
     static synchronized void syncTopRatedMovies(MovieDao movieDao) {
         try {
 
+            long start = System.currentTimeMillis();
+
             int maxPage = DEFAULT_MAX_PAGES;
             for (int i = 1; i <= maxPage; i++) {
 
                 Log.d(TAG, String.format("syncTopRatedMovies - Preparing request for top rated movie: page:%d, maxPage:%d", i, maxPage));
-                Response response = sMmovieDbService.getMovies(TOP_RATED_MOVIES, API_KEY, i).execute();
+                Response response = sMovieDbService.getMovies(TOP_RATED_MOVIES, API_KEY, i).execute();
                 MoviesWrapper moviesWrapper = (MoviesWrapper) response.body();
                 Log.d(TAG, String.format("syncTopRatedMovies - Top rated movies response: code:%s, body:%s, errorBody:%s", response.code(), response.body(), response.errorBody()));
 
                 if (moviesWrapper == null) {
-                    return;
+                    throw new IOException("Null response!");
                 }
 
                 if (maxPage > moviesWrapper.getTotalPages()) {
@@ -102,15 +111,13 @@ class MovieSyncTask {
                 List<TopRatedMovie> topRatedMovieList = new ArrayList<>();
                 List<Movie> movieList = moviesWrapper.getMovieList();
                 for (Movie movie : movieList) {
-                    if (movieDao.getMovieCountById(movie.id) == 0) {
-                        Log.d(TAG, String.format("syncTopRatedMovies - Inserting movie: id:%d", movie.id));
-                        movieDao.insertMovie(movie);
-                    }
-                    // Insert popular movie
                     TopRatedMovie topRatedMovie = new TopRatedMovie();
                     topRatedMovie.id = movie.id;
                     topRatedMovieList.add(topRatedMovie);
                 }
+
+                Log.d(TAG, String.format("syncTopRatedMovies - Inserting movies: movieList:%s", Arrays.toString(movieList.toArray())));
+                movieDao.insertMovies(movieList);
 
                 Log.d(TAG, String.format("syncTopRatedMovies - Inserting top rated movies: topRatedMovieList:%s", Arrays.toString(topRatedMovieList.toArray())));
                 movieDao.insertTopRatedMovies(topRatedMovieList);
@@ -119,8 +126,14 @@ class MovieSyncTask {
                 Thread.sleep(API_REQUEST_SLEEP);
             }
 
+            long end = System.currentTimeMillis();
+
+            long timeTakenMs = end - start;
+            Log.d(TAG, String.format("20 batch movie insert, 20 batch top_rated movie insert, & maxPage of %d:(end - start) = timeTakenMs -> (%d - %d) = %d MS = %d S", maxPage, end, start, timeTakenMs, (timeTakenMs / 1000)));
+
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            MovieRepository.getMovies().postValue(null);
+            Log.e(TAG, e.getMessage());
         }
     }
 }
