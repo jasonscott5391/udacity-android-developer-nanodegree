@@ -59,18 +59,41 @@ public class MoviesTest {
     }
 
     @Test
-    public void testSelectMovieById() {
+    public void testSelectPopularMovieById() {
         insertMovies(TEST_NUM_MOVIES);
-        int random = randomInt(1, TEST_NUM_MOVIES);
+        int random = randomInt(1, (TEST_NUM_MOVIES / 2) + 1);
 
-        Movie movie = mMovieDatabase.movies().getMovieById(Integer.toUnsignedLong(random));
-        assertEquals(Long.valueOf(Integer.toUnsignedLong(random)), movie.id);
-        assertEquals(String.format("TEST_ORIGINAL_TITLE_%d", random), movie.originalTitle);
-        assertEquals(String.format("TEST_POSTER_PATH_%d", random), movie.posterPath);
-        assertEquals(String.format("TEST_OVERVIEW_%d", random), movie.overview);
-        assertEquals(Double.valueOf((double) random), movie.voteAverage);
-        assertEquals(String.format("TEST_RELEASE_DATE_%d", random), movie.releaseDate);
+        List<MovieDao.BaseMovie> popularMovieList = mMovieDatabase.movies().getPopularMovies();
+        MovieDao.BaseMovie baseMovie = popularMovieList.get(random-1);
+
+        Movie movie = mMovieDatabase.movies().getPopularMovieById(random);
+
+        assertEquals(baseMovie.id, movie.id);
+        assertEquals(String.format("TEST_ORIGINAL_TITLE_%d", baseMovie.id), movie.originalTitle);
+        assertEquals(String.format("TEST_POSTER_PATH_%d", baseMovie.id), movie.posterPath);
+        assertEquals(String.format("TEST_OVERVIEW_%d", baseMovie.id), movie.overview);
+        assertEquals(Double.valueOf((double) baseMovie.id), movie.voteAverage);
+        assertEquals(String.format("TEST_RELEASE_DATE_%d", baseMovie.id), movie.releaseDate);
     }
+
+    @Test
+    public void testSelectTopRatedMovieById() {
+        insertMovies(TEST_NUM_MOVIES);
+        int random = randomInt(1, TEST_NUM_MOVIES / 2);
+
+        List<MovieDao.BaseMovie> topRatedMovieList = mMovieDatabase.movies().getTopRatedMovies();
+        MovieDao.BaseMovie baseMovie = topRatedMovieList.get(random-1);
+
+        Movie movie = mMovieDatabase.movies().getTopRatedMovieById(random*2);
+
+        assertEquals(baseMovie.id, movie.id);
+        assertEquals(String.format("TEST_ORIGINAL_TITLE_%d", baseMovie.id), movie.originalTitle);
+        assertEquals(String.format("TEST_POSTER_PATH_%d", baseMovie.id), movie.posterPath);
+        assertEquals(String.format("TEST_OVERVIEW_%d", baseMovie.id), movie.overview);
+        assertEquals(Double.valueOf((double) baseMovie.id), movie.voteAverage);
+        assertEquals(String.format("TEST_RELEASE_DATE_%d", baseMovie.id), movie.releaseDate);
+    }
+
 
     @Test
     public void testSelectPopularMovies() {

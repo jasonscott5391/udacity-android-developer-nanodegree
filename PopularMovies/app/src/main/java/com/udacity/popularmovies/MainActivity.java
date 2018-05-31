@@ -2,7 +2,9 @@ package com.udacity.popularmovies;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,15 +13,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.udacity.popularmovies.settings.SettingsActivity;
-import com.udacity.popularmovies.viewmodel.MoviesViewModel;
+import com.udacity.popularmovies.sync.MovieSyncTask;
+import com.udacity.popularmovies.viewmodel.MovieListViewModel;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.PopularMoviesClickHandler {
 
     private static final int SPAN_COUNT = 2;
+    protected static final String INTENT_KEY_MOVIE_DB = "INTENT_KEY_MOVIE_DB";
 
-    private MoviesViewModel mViewModel;
+    private MovieListViewModel mViewModel;
     private RecyclerView mRecyclerView;
     private GridLayoutManager mGridLayoutManager;
     private MoviesAdapter mMoviesAdapter;
@@ -36,15 +40,39 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Pop
 
         mMoviesAdapter = new MoviesAdapter(this, this, new ArrayList<>());
         mRecyclerView.setAdapter(mMoviesAdapter);
-        mViewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(MovieListViewModel.class);
         mViewModel.getMoviesList().observe(MainActivity.this, movies -> mMoviesAdapter.swapMovies(movies));
 
     }
 
     @Override
-    public void onClick(long id) {
-        // TODO (jasonscott) Create intent for detailed movie Activity.
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String sortKey = getString(R.string.pref_movie_sort_key);
+        String defaultSort = getString(R.string.pref_movie_sort_popular);
+        String sortPreference = sharedPreferences.getString(sortKey, defaultSort);
 
+        switch (sortPreference) {
+            case MovieSyncTask.POPULAR_MOVIES:
+                setTitle(R.string.popular_movies);
+                break;
+
+            case MovieSyncTask.TOP_RATED_MOVIES:
+                setTitle(R.string.top_rated_movies);
+                break;
+
+            default:
+                setTitle(R.string.app_name);
+                break;
+        }
+    }
+
+    @Override
+    public void onClick(long id) {
+        Intent movieDetailIntent = new Intent(MainActivity.this, DetailActivity.class);
+        movieDetailIntent.putExtra(INTENT_KEY_MOVIE_DB, id);
+        startActivity(movieDetailIntent);
     }
 
     @Override

@@ -19,10 +19,7 @@ public interface MovieDao {
     @Query("SELECT COUNT(*) FROM " + TopRatedMovie.TOP_RATED_MOVIES_TABLE_NAME)
     int getTopRatedMovieCount();
 
-    @Insert()
-    long insertMovie(Movie movie);
-
-    @Insert()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertMovies(List<Movie> movieList);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -32,10 +29,10 @@ public interface MovieDao {
     long[] insertTopRatedMovies(List<TopRatedMovie> topRatedMovieList);
 
     @Query("SELECT * FROM " + Movie.MOVIES_TABLE_NAME + " WHERE " + Movie.COLUMN_MOVIE_DB_ID + " = :id")
-    Movie getMovieById(long id);
+    Movie getPopularMovieById(long id);
 
-    @Query("SELECT COUNT(*) FROM " + Movie.MOVIES_TABLE_NAME + " WHERE " + Movie.COLUMN_MOVIE_DB_ID + " = :id")
-    int getMovieCountById(long id);
+    @Query("SELECT * FROM " + Movie.MOVIES_TABLE_NAME + " WHERE " + Movie.COLUMN_MOVIE_DB_ID + " = :id")
+    Movie getTopRatedMovieById(long id);
 
     @Query("SELECT "
             + Movie.MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + " AS id, "

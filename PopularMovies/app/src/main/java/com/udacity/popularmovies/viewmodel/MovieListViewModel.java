@@ -2,7 +2,6 @@ package com.udacity.popularmovies.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,11 +14,11 @@ import com.udacity.popularmovies.repository.MovieRepository;
 
 import java.util.List;
 
-public class MoviesViewModel extends AndroidViewModel {
+public class MovieListViewModel extends AndroidViewModel {
 
     private MutableLiveData<List<MovieDao.BaseMovie>> mMoviesList;
 
-    public MoviesViewModel(@NonNull Application application) {
+    public MovieListViewModel(@NonNull Application application) {
         super(application);
         Context context = this.getApplication();
 
@@ -33,7 +32,7 @@ public class MoviesViewModel extends AndroidViewModel {
         mMoviesList = MovieRepository.getMovies();
     }
 
-    public LiveData<List<MovieDao.BaseMovie>> getMoviesList() {
+    public MutableLiveData<List<MovieDao.BaseMovie>> getMoviesList() {
         return mMoviesList;
     }
 

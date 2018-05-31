@@ -1,7 +1,10 @@
 package com.udacity.popularmovies.sync;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -26,6 +29,20 @@ public class MovieSyncIntentService extends IntentService {
         String preference = intent.getStringExtra(PREFERENCE_KEY);
 
         Log.d(TAG, String.format("onHandleIntent - intent:%s, preference:%s", intent, preference));
+
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = null;
+        if (cm != null) {
+            activeNetwork = cm.getActiveNetworkInfo();
+        }
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if (!isConnected) {
+            return;
+        }
 
         switch (preference) {
             case MovieSyncTask.POPULAR_MOVIES:
