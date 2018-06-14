@@ -8,19 +8,20 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.udacity.popularmovies.settings.SettingsActivity;
 import com.udacity.popularmovies.sync.MovieSyncTask;
+import com.udacity.popularmovies.utils.PopularMoviesUtils;
 import com.udacity.popularmovies.viewmodel.MovieListViewModel;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.PopularMoviesClickHandler {
 
-    private static final int SPAN_COUNT = 2;
     protected static final String INTENT_KEY_MOVIE_DB = "INTENT_KEY_MOVIE_DB";
 
     private MovieListViewModel mViewModel;
@@ -33,8 +34,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Pop
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Dynamically determine number of columns based on device size & layout.
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int numColumns = displayMetrics.widthPixels / PopularMoviesUtils.DEFAULT_POSTER_WIDTH.value();
+
         mRecyclerView = findViewById(R.id.movies_recycler_view);
-        mGridLayoutManager = new GridLayoutManager(this, SPAN_COUNT);
+        mGridLayoutManager = new GridLayoutManager(this, numColumns);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
 
