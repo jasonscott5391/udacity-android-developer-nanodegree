@@ -6,9 +6,10 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.udacity.popularmovies.data.Movie;
+import com.udacity.popularmovies.entity.Movie;
 import com.udacity.popularmovies.data.MovieDao;
 import com.udacity.popularmovies.data.MovieDatabase;
+import com.udacity.popularmovies.entity.MovieVideo;
 import com.udacity.popularmovies.sync.MovieSyncTask;
 import com.udacity.popularmovies.sync.MovieSyncUtils;
 
@@ -18,6 +19,7 @@ public class MovieRepository {
     private static final String TAG = MovieRepository.class.getSimpleName();
     private static MutableLiveData<List<MovieDao.BaseMovie>> sMovieList;
     private static MutableLiveData<Movie> sMovie;
+    private static MutableLiveData<List<MovieVideo>> sMovieVideoList;
     private static boolean sInitialized;
 
     public static void init(@NonNull final Context context, String preference) {
@@ -30,12 +32,17 @@ public class MovieRepository {
 
         Log.d(TAG, String.format("init() - preference:%s", preference));
         sMovieList = new MutableLiveData<>();
+        sMovieVideoList = new MutableLiveData<>();
         sMovie = new MutableLiveData<>();
         MovieSyncUtils.startImmediateSync(context, preference);
     }
 
     public static MutableLiveData<List<MovieDao.BaseMovie>> getMovies() {
         return sMovieList;
+    }
+
+    public static MutableLiveData<List<MovieVideo>> getMovieVideos() {
+        return sMovieVideoList;
     }
 
     public static void updateMovies(Context context, String preference) {
@@ -67,5 +74,18 @@ public class MovieRepository {
         }.execute();
 
         return sMovie;
+    }
+
+    public static MutableLiveData<List<MovieVideo>> getMovieVideosByMovieId(Context context, long movieId) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                MovieSyncUtils.syncMovieVideos(context, movieId);
+                return null;
+            }
+
+        }.execute();
+
+        return sMovieVideoList;
     }
 }

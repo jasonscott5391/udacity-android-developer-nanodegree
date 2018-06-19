@@ -2,11 +2,13 @@ package com.udacity.popularmovies.sync;
 
 import android.util.Log;
 
-import com.udacity.popularmovies.data.Movie;
+import com.udacity.popularmovies.data.MovieVideosWrapper;
+import com.udacity.popularmovies.entity.Movie;
 import com.udacity.popularmovies.data.MovieDao;
 import com.udacity.popularmovies.data.MoviesWrapper;
-import com.udacity.popularmovies.data.PopularMovie;
-import com.udacity.popularmovies.data.TopRatedMovie;
+import com.udacity.popularmovies.entity.MovieVideo;
+import com.udacity.popularmovies.entity.PopularMovie;
+import com.udacity.popularmovies.entity.TopRatedMovie;
 import com.udacity.popularmovies.repository.MovieRepository;
 import com.udacity.popularmovies.service.MovieDbService;
 
@@ -133,6 +135,42 @@ public class MovieSyncTask {
 
         } catch (IOException | InterruptedException e) {
             MovieRepository.getMovies().postValue(null);
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    static synchronized void syncMovieVideos(MovieDao movieDao, long movieId) {
+        try {
+
+            long start = System.currentTimeMillis();
+            Log.d(TAG, String.format("syncMovieVideos - Preparing request for movie videos: %d:", movieId));
+            Response response = sMovieDbService.getMovieVideos(movieId, API_KEY).execute();
+            Log.d(TAG, String.format("syncMovieVideos - Movie videos response: code:%s, body:%s, errorBody:%s", response.code(), response.body(), response.errorBody()));
+            MovieVideosWrapper movieVideosWrapper = (MovieVideosWrapper) response.body();
+
+            if (movieVideosWrapper == null) {
+                throw new IOException("Null response!");
+            }
+
+            List<MovieVideo> movieVideoList = movieVideosWrapper.getMovieVideoList();
+
+            for (MovieVideo movieVideo : movieVideoList) {
+                movieVideo.movieDbid = movieId;
+            }
+
+            Log.d(TAG, String.format("syncMovieVideos - Inserting movie videos: movieVideoList:%s", Arrays.toString(movieVideoList.toArray())));
+            movieDao.insertMovieVideos(movieVideoList);
+
+            MovieRepository.getMovieVideos().postValue(movieDao.getMovieVideos(movieId));
+
+            long end = System.currentTimeMillis();
+
+            long timeTakenMs = end - start;
+
+            Log.d(TAG, String.format("Movie Videos insert for movie ID %d:(end - start) = timeTakenMs -> (%d - %d) = %d MS = %d S", movieId, end, start, timeTakenMs, (timeTakenMs / 1000)));
+
+        } catch (IOException e) {
+            MovieRepository.getMovieVideos().postValue(null);
             Log.e(TAG, e.getMessage());
         }
     }

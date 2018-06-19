@@ -1,6 +1,7 @@
 package com.udacity.popularmovies.data;
 
 import com.google.gson.annotations.SerializedName;
+import com.udacity.popularmovies.entity.Movie;
 
 import java.util.List;
 

@@ -5,11 +5,11 @@ import android.arch.persistence.room.Room;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.udacity.popularmovies.data.Movie;
+import com.udacity.popularmovies.entity.Movie;
 import com.udacity.popularmovies.data.MovieDao;
 import com.udacity.popularmovies.data.MovieDatabase;
-import com.udacity.popularmovies.data.PopularMovie;
-import com.udacity.popularmovies.data.TopRatedMovie;
+import com.udacity.popularmovies.entity.PopularMovie;
+import com.udacity.popularmovies.entity.TopRatedMovie;
 
 import org.junit.After;
 import org.junit.Before;

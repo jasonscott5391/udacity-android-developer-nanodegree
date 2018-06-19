@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.PopularMoviesClickHandler {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     protected static final String INTENT_KEY_MOVIE_DB = "INTENT_KEY_MOVIE_DB";
 
     private MovieListViewModel mViewModel;
@@ -46,7 +48,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Pop
         mMoviesAdapter = new MoviesAdapter(this, this, new ArrayList<>());
         mRecyclerView.setAdapter(mMoviesAdapter);
         mViewModel = ViewModelProviders.of(this).get(MovieListViewModel.class);
-        mViewModel.getMoviesList().observe(MainActivity.this, movies -> mMoviesAdapter.swapMovies(movies));
+        mViewModel.getMoviesList().observe(MainActivity.this, movies -> {
+            Log.d(TAG, "onCreate - Updating list of movies.");
+            mMoviesAdapter.swapMovies(movies);
+        });
 
     }
 

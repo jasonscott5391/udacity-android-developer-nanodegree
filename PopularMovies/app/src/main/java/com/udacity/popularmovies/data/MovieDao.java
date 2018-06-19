@@ -5,6 +5,11 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
+import com.udacity.popularmovies.entity.Movie;
+import com.udacity.popularmovies.entity.MovieVideo;
+import com.udacity.popularmovies.entity.PopularMovie;
+import com.udacity.popularmovies.entity.TopRatedMovie;
+
 import java.util.List;
 
 @Dao
@@ -27,6 +32,9 @@ public interface MovieDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertTopRatedMovies(List<TopRatedMovie> topRatedMovieList);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long[] insertMovieVideos(List<MovieVideo> movieVideoList);
 
     @Query("SELECT * FROM " + Movie.MOVIES_TABLE_NAME + " WHERE " + Movie.COLUMN_MOVIE_DB_ID + " = :id")
     Movie getPopularMovieById(long id);
@@ -51,6 +59,14 @@ public interface MovieDao {
             + " ON (" + Movie.MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + " = " + TopRatedMovie.TOP_RATED_MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + ")"
             + " ORDER BY " + TopRatedMovie.COLUMN_TOP_RATED_MOVIE_ID + " ASC")
     List<BaseMovie> getTopRatedMovies();
+
+
+    @Query("SELECT "
+            + MovieVideo.COLUMN_YOUTUBE_KEY + ", "
+            + MovieVideo.COLUMN_NAME
+            + " FROM " + MovieVideo.MOVIE_VIDEOS_TABLE_NAME
+            + " WHERE " + Movie.COLUMN_MOVIE_DB_ID + " = :id")
+    List<MovieVideo> getMovieVideos(long id);
 
     class BaseMovie {
         public Long id;

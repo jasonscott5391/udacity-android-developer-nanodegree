@@ -16,4 +16,6 @@
     <string name="pref_movie_sort_top_rated" translatable="false">top_rated</string>
     <string name="title_activity_detail">DetailActivity</string>
 
+    <string name="movie_trailers_label">Trailers</string>
+
 </resources>

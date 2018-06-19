@@ -1,4 +1,4 @@
-package com.udacity.popularmovies.data;
+package com.udacity.popularmovies.entity;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -7,8 +7,8 @@ import android.arch.persistence.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
-import static com.udacity.popularmovies.data.Movie.COLUMN_MOVIE_DB_ID;
-import static com.udacity.popularmovies.data.TopRatedMovie.TOP_RATED_MOVIES_TABLE_NAME;
+import static com.udacity.popularmovies.entity.Movie.COLUMN_MOVIE_DB_ID;
+import static com.udacity.popularmovies.entity.TopRatedMovie.TOP_RATED_MOVIES_TABLE_NAME;
 
 @Entity(tableName = TOP_RATED_MOVIES_TABLE_NAME, indices = @Index(value = {COLUMN_MOVIE_DB_ID}, unique = true))
 public class TopRatedMovie {
