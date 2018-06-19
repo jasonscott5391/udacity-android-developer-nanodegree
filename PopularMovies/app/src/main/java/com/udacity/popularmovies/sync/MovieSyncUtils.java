@@ -25,4 +25,9 @@ public class MovieSyncUtils {
         MovieDatabase movieDatabase = MovieDatabase.getInstance(context);
         MovieSyncTask.syncMovieVideos(movieDatabase.movies(), movieId);
     }
+
+    public static void syncMovieReviews(Context context, long movieId) {
+        MovieDatabase movieDatabase = MovieDatabase.getInstance(context);
+        MovieSyncTask.syncMovieReviews(movieDatabase.movies(), movieId);
+    }
 }

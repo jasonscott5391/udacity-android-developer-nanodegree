@@ -9,6 +9,7 @@ import android.util.Log;
 import com.udacity.popularmovies.entity.Movie;
 import com.udacity.popularmovies.data.MovieDao;
 import com.udacity.popularmovies.data.MovieDatabase;
+import com.udacity.popularmovies.entity.MovieReview;
 import com.udacity.popularmovies.entity.MovieVideo;
 import com.udacity.popularmovies.sync.MovieSyncTask;
 import com.udacity.popularmovies.sync.MovieSyncUtils;
@@ -20,6 +21,7 @@ public class MovieRepository {
     private static MutableLiveData<List<MovieDao.BaseMovie>> sMovieList;
     private static MutableLiveData<Movie> sMovie;
     private static MutableLiveData<List<MovieVideo>> sMovieVideoList;
+    private static MutableLiveData<List<MovieReview>> sMovieReviewList;
     private static boolean sInitialized;
 
     public static void init(@NonNull final Context context, String preference) {
@@ -32,8 +34,9 @@ public class MovieRepository {
 
         Log.d(TAG, String.format("init() - preference:%s", preference));
         sMovieList = new MutableLiveData<>();
-        sMovieVideoList = new MutableLiveData<>();
         sMovie = new MutableLiveData<>();
+        sMovieVideoList = new MutableLiveData<>();
+        sMovieReviewList = new MutableLiveData<>();
         MovieSyncUtils.startImmediateSync(context, preference);
     }
 
@@ -43,6 +46,10 @@ public class MovieRepository {
 
     public static MutableLiveData<List<MovieVideo>> getMovieVideos() {
         return sMovieVideoList;
+    }
+
+    public static MutableLiveData<List<MovieReview>> getMovieReviews() {
+        return sMovieReviewList;
     }
 
     public static void updateMovies(Context context, String preference) {
@@ -87,5 +94,18 @@ public class MovieRepository {
         }.execute();
 
         return sMovieVideoList;
+    }
+
+    public static MutableLiveData<List<MovieReview>> getMovieReviewByMovieId(Context context, long movieId) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                MovieSyncUtils.syncMovieReviews(context, movieId);
+                return null;
+            }
+
+        }.execute();
+
+        return sMovieReviewList;
     }
 }

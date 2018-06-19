@@ -6,6 +6,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import com.udacity.popularmovies.entity.Movie;
+import com.udacity.popularmovies.entity.MovieReview;
 import com.udacity.popularmovies.entity.MovieVideo;
 import com.udacity.popularmovies.entity.PopularMovie;
 import com.udacity.popularmovies.entity.TopRatedMovie;
@@ -35,6 +36,9 @@ public interface MovieDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertMovieVideos(List<MovieVideo> movieVideoList);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long[] insertMovieReviews(List<MovieReview> movieReviewList);
 
     @Query("SELECT * FROM " + Movie.MOVIES_TABLE_NAME + " WHERE " + Movie.COLUMN_MOVIE_DB_ID + " = :id")
     Movie getPopularMovieById(long id);
@@ -67,6 +71,13 @@ public interface MovieDao {
             + " FROM " + MovieVideo.MOVIE_VIDEOS_TABLE_NAME
             + " WHERE " + Movie.COLUMN_MOVIE_DB_ID + " = :id")
     List<MovieVideo> getMovieVideos(long id);
+
+    @Query("SELECT "
+            + MovieReview.COLUMN_MOVIE_REVIEW_AUTHOR + ", "
+            + MovieReview.COLUMN_MOVIE_REVIEW_CONTENT
+            + " FROM " + MovieReview.MOVIE_REVIEWS_TABLE_NAME
+            + " WHERE " + Movie.COLUMN_MOVIE_DB_ID + " = :id")
+    List<MovieReview> getMovieReviews(long id);
 
     class BaseMovie {
         public Long id;

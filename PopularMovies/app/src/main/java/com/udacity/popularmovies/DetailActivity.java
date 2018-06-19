@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.udacity.popularmovies.entity.Movie;
 import com.udacity.popularmovies.utils.PopularMoviesUtils;
+import com.udacity.popularmovies.viewmodel.MovieReviewListViewModel;
+import com.udacity.popularmovies.viewmodel.MovieReviewListViewModelFactory;
 import com.udacity.popularmovies.viewmodel.MovieVideoListViewModel;
 import com.udacity.popularmovies.viewmodel.MovieVideoListViewModelFactory;
 import com.udacity.popularmovies.viewmodel.MovieViewModel;
@@ -35,10 +37,16 @@ public class DetailActivity extends AppCompatActivity implements MovieVideosAdap
     private TextView mReleaseDateTextView;
     private TextView mVoteAverageTextView;
     private TextView mOverviewTextView;
-    private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLinearLayoutManager;
+
+    private RecyclerView mMovieVideosRecyclerView;
+    private LinearLayoutManager mMovieVideosLinearLayoutManager;
     private MovieVideosAdapter mMovieVideosAdapter;
-    private MovieVideoListViewModel mMovieListViewModel;
+    private MovieVideoListViewModel mMovieVideoListViewModel;
+
+    private RecyclerView mMovieReviewsRecyclerView;
+    private LinearLayoutManager mMovieReviewsLinearLayoutManager;
+    private MovieReviewsAdapter mMovieReviewsAdapter;
+    private MovieReviewListViewModel mMovieReviewListViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,22 +59,35 @@ public class DetailActivity extends AppCompatActivity implements MovieVideosAdap
         mVoteAverageTextView = findViewById(R.id.text_view_vote_average);
         mOverviewTextView = findViewById(R.id.text_view_overview);
 
-        mRecyclerView = findViewById(R.id.movie_videos_recycler_view);
-        mLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mMovieVideosRecyclerView = findViewById(R.id.movie_videos_recycler_view);
+        mMovieVideosLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
-        mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mRecyclerView.setHasFixedSize(true);
+        mMovieVideosRecyclerView.setLayoutManager(mMovieVideosLinearLayoutManager);
+        mMovieVideosRecyclerView.setHasFixedSize(true);
 
         mMovieVideosAdapter = new MovieVideosAdapter(this, this, new ArrayList<>());
-        mRecyclerView.setAdapter(mMovieVideosAdapter);
+        mMovieVideosRecyclerView.setAdapter(mMovieVideosAdapter);
+
+        mMovieReviewsRecyclerView = findViewById(R.id.movie_reviews_recycler_view);
+        mMovieReviewsLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
+        mMovieReviewsRecyclerView.setLayoutManager(mMovieReviewsLinearLayoutManager);
+        mMovieReviewsRecyclerView.setHasFixedSize(true);
+
+        mMovieReviewsAdapter = new MovieReviewsAdapter(this, new ArrayList<>());
+        mMovieReviewsRecyclerView.setAdapter(mMovieReviewsAdapter);
 
         long id = getIntent().getLongExtra(INTENT_KEY_MOVIE_DB, -1L);
         mMovieViewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
         mMovieViewModel.getMovie(id).observe(DetailActivity.this, this::bindMovie);
 
         MovieVideoListViewModelFactory movieVideoListViewModelFactory = new MovieVideoListViewModelFactory(this, id);
-        mMovieListViewModel = ViewModelProviders.of(this, movieVideoListViewModelFactory).get(MovieVideoListViewModel.class);
-        mMovieListViewModel.getMovieVideoList().observe(this, movieVideoList -> mMovieVideosAdapter.swapMovieVideos(movieVideoList));
+        mMovieVideoListViewModel = ViewModelProviders.of(this, movieVideoListViewModelFactory).get(MovieVideoListViewModel.class);
+        mMovieVideoListViewModel.getMovieVideoList().observe(this, movieVideoList -> mMovieVideosAdapter.swapMovieVideos(movieVideoList));
+
+        MovieReviewListViewModelFactory movieReviewListViewModelFactory = new MovieReviewListViewModelFactory(this, id);
+        mMovieReviewListViewModel = ViewModelProviders.of(this, movieReviewListViewModelFactory).get(MovieReviewListViewModel.class);
+        mMovieReviewListViewModel.getMovieReviewList().observe(this, movieReviewList -> mMovieReviewsAdapter.swapMovieReviews(movieReviewList));
     }
 
     private void bindMovie(Movie movie) {

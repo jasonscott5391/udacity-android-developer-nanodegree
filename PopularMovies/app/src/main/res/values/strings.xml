@@ -2,7 +2,7 @@
     <string name="app_name">Popular Movies</string>
     <string name="popular_movies">Popular Movies</string>
     <string name="top_rated_movies">Top Rated Movies</string>
-    
+
     <string name="title_activity_settings">SettingsActivity</string>
 
     <string name="action_settings">Settings</string>
@@ -17,5 +17,6 @@
     <string name="title_activity_detail">DetailActivity</string>
 
     <string name="movie_trailers_label">Trailers</string>
+    <string name="movie_reviews_label">Reviews</string>
 
 </resources>

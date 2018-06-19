@@ -2,10 +2,12 @@ package com.udacity.popularmovies.sync;
 
 import android.util.Log;
 
+import com.udacity.popularmovies.data.MovieReviewsWrapper;
 import com.udacity.popularmovies.data.MovieVideosWrapper;
 import com.udacity.popularmovies.entity.Movie;
 import com.udacity.popularmovies.data.MovieDao;
 import com.udacity.popularmovies.data.MoviesWrapper;
+import com.udacity.popularmovies.entity.MovieReview;
 import com.udacity.popularmovies.entity.MovieVideo;
 import com.udacity.popularmovies.entity.PopularMovie;
 import com.udacity.popularmovies.entity.TopRatedMovie;
@@ -174,4 +176,42 @@ public class MovieSyncTask {
             Log.e(TAG, e.getMessage());
         }
     }
+
+    static synchronized void syncMovieReviews(MovieDao movieDao, long movieId) {
+        try {
+
+            long start = System.currentTimeMillis();
+            Log.d(TAG, String.format("syncMovieReviews - Preparing request for movie reviews: %d:", movieId));
+            Response response = sMovieDbService.getMovieReviews(movieId, API_KEY).execute();
+            Log.d(TAG, String.format("syncMovieReviews - Movie reviews response: code:%s, body:%s, errorBody:%s", response.code(), response.body(), response.errorBody()));
+            MovieReviewsWrapper movieReviewsWrapper = (MovieReviewsWrapper) response.body();
+
+            if (movieReviewsWrapper == null) {
+                throw new IOException("Null response!");
+            }
+
+            List<MovieReview> movieReviewList = movieReviewsWrapper.getMovieReviewList();
+
+            for (MovieReview movieReview : movieReviewList) {
+                movieReview.movieDbid = movieId;
+            }
+
+            Log.d(TAG, String.format("syncMovieReviews - Inserting movie reviews: movieVideoList:%s", Arrays.toString(movieReviewList.toArray())));
+            movieDao.insertMovieReviews(movieReviewList);
+
+            MovieRepository.getMovieReviews().postValue(movieDao.getMovieReviews(movieId));
+
+            long end = System.currentTimeMillis();
+
+            long timeTakenMs = end - start;
+
+            Log.d(TAG, String.format("Movie Reviews insert for movie ID %d:(end - start) = timeTakenMs -> (%d - %d) = %d MS = %d S", movieId, end, start, timeTakenMs, (timeTakenMs / 1000)));
+
+        } catch (IOException e) {
+            MovieRepository.getMovieVideos().postValue(null);
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+
 }
