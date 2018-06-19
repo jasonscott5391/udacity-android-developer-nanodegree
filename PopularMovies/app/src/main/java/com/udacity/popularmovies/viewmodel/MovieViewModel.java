@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.udacity.popularmovies.R;
-import com.udacity.popularmovies.data.Movie;
+import com.udacity.popularmovies.entity.Movie;
 import com.udacity.popularmovies.repository.MovieRepository;
 
 public class MovieViewModel extends AndroidViewModel {

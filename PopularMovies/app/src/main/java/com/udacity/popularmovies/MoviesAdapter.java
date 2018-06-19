@@ -22,8 +22,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.PopularMov
 
     private List<MovieDao.BaseMovie> mMovieList;
 
-    public MoviesAdapter(@NonNull Context mContext, PopularMoviesClickHandler clickHandler, List<MovieDao.BaseMovie> movieList) {
-        this.mContext = mContext;
+    public MoviesAdapter(@NonNull Context context, PopularMoviesClickHandler clickHandler, List<MovieDao.BaseMovie> movieList) {
+        this.mContext = context;
         this.mClickHandler = clickHandler;
         this.mMovieList = movieList;
     }

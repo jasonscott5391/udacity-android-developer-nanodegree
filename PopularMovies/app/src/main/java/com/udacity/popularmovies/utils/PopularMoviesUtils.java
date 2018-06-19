@@ -45,4 +45,8 @@ public class PopularMoviesUtils {
     public static String buildPosterImageUrl(String posterPath, PosterWidth posterWidth) {
         return String.format("%s/%s/%s", BASE_MOVIE_DB_URL, posterWidth.key(), posterPath);
     }
+
+    public static String buildYouTubeUrl(String key) {
+        return String.format("https://www.youtube.com/watch?v=%s", key);
+    }
 }
