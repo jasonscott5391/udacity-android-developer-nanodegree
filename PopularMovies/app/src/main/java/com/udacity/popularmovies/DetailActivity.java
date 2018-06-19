@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,6 +38,8 @@ public class DetailActivity extends AppCompatActivity implements MovieVideosAdap
     private TextView mReleaseDateTextView;
     private TextView mVoteAverageTextView;
     private TextView mOverviewTextView;
+    private TextView mTrailersTextView;
+    private TextView mReviewsTextView;
 
     private RecyclerView mMovieVideosRecyclerView;
     private LinearLayoutManager mMovieVideosLinearLayoutManager;
@@ -58,6 +61,8 @@ public class DetailActivity extends AppCompatActivity implements MovieVideosAdap
         mReleaseDateTextView = findViewById(R.id.text_view_release_date);
         mVoteAverageTextView = findViewById(R.id.text_view_vote_average);
         mOverviewTextView = findViewById(R.id.text_view_overview);
+        mTrailersTextView = findViewById(R.id.movie_trailers_label);
+        mReviewsTextView = findViewById(R.id.movie_reviews_label);
 
         mMovieVideosRecyclerView = findViewById(R.id.movie_videos_recycler_view);
         mMovieVideosLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -83,11 +88,27 @@ public class DetailActivity extends AppCompatActivity implements MovieVideosAdap
 
         MovieVideoListViewModelFactory movieVideoListViewModelFactory = new MovieVideoListViewModelFactory(this, id);
         mMovieVideoListViewModel = ViewModelProviders.of(this, movieVideoListViewModelFactory).get(MovieVideoListViewModel.class);
-        mMovieVideoListViewModel.getMovieVideoList().observe(this, movieVideoList -> mMovieVideosAdapter.swapMovieVideos(movieVideoList));
+        mMovieVideoListViewModel.getMovieVideoList().observe(this, movieVideoList -> {
+            mMovieVideosAdapter.swapMovieVideos(movieVideoList);
+            if (movieVideoList != null
+                    && !movieVideoList.isEmpty()) {
+                mTrailersTextView.setVisibility(View.VISIBLE);
+            } else {
+                mTrailersTextView.setVisibility(View.INVISIBLE);
+            }
+        });
 
         MovieReviewListViewModelFactory movieReviewListViewModelFactory = new MovieReviewListViewModelFactory(this, id);
         mMovieReviewListViewModel = ViewModelProviders.of(this, movieReviewListViewModelFactory).get(MovieReviewListViewModel.class);
-        mMovieReviewListViewModel.getMovieReviewList().observe(this, movieReviewList -> mMovieReviewsAdapter.swapMovieReviews(movieReviewList));
+        mMovieReviewListViewModel.getMovieReviewList().observe(this, movieReviewList -> {
+            mMovieReviewsAdapter.swapMovieReviews(movieReviewList);
+            if (movieReviewList != null
+                    && !movieReviewList.isEmpty()) {
+                mReviewsTextView.setVisibility(View.VISIBLE);
+            } else {
+                mReviewsTextView.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     private void bindMovie(Movie movie) {

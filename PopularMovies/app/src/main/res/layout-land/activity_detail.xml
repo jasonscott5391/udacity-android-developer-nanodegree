@@ -97,6 +97,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/movie_trailers_label" />
 
@@ -111,6 +112,7 @@
             android:textColor="#dadee5"
             android:textSize="24sp"
             android:textStyle="bold|italic"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/movie_videos_recycler_view" />
 
