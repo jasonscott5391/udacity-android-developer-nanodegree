@@ -33,6 +33,7 @@ public class MovieSyncTask {
 
     public static final String POPULAR_MOVIES = "popular";
     public static final String TOP_RATED_MOVIES = "top_rated";
+    public static final String FAVORITE_MOVIES = "favorites";
 
     private static final MovieDbService sMovieDbService = new Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -139,6 +140,12 @@ public class MovieSyncTask {
             MovieRepository.getMovies().postValue(null);
             Log.e(TAG, e.getMessage());
         }
+    }
+
+    static synchronized void syncFavoriteMovies(MovieDao movieDao) {
+        Log.d(TAG, "syncFavoriteMovies - Preparing request for favorite movies.");
+        MovieRepository.getMovies().postValue(movieDao.getFavoriteMovies());
+        Log.d(TAG, "syncFavoriteMovies - Completed request for favorite movies.");
     }
 
     static synchronized void syncMovieVideos(MovieDao movieDao, long movieId) {

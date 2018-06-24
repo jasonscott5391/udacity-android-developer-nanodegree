@@ -2,6 +2,8 @@ package com.udacity.popularmovies.entity;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
@@ -51,4 +53,9 @@ public class Movie {
     @ColumnInfo(name = COLUMN_RELEASE_DATE)
     @SerializedName(COLUMN_RELEASE_DATE)
     public String releaseDate;
+
+    @ForeignKey(entity = FavoriteMovie.class,
+            parentColumns = COLUMN_MOVIE_DB_ID,
+            childColumns = FavoriteMovie.COLUMN_FAVORITE_MOVIE_ID)
+    public Long favoriteMovieId;
 }

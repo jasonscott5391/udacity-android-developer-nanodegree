@@ -5,13 +5,19 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
+import com.udacity.popularmovies.entity.FavoriteMovie;
 import com.udacity.popularmovies.entity.Movie;
 import com.udacity.popularmovies.entity.MovieReview;
 import com.udacity.popularmovies.entity.MovieVideo;
 import com.udacity.popularmovies.entity.PopularMovie;
 import com.udacity.popularmovies.entity.TopRatedMovie;
 
-@Database(entities = {Movie.class, PopularMovie.class, TopRatedMovie.class, MovieVideo.class, MovieReview.class}, version = 1)
+@Database(entities = {Movie.class,
+        PopularMovie.class,
+        TopRatedMovie.class,
+        MovieVideo.class,
+        MovieReview.class,
+        FavoriteMovie.class}, version = 1)
 public abstract class MovieDatabase extends RoomDatabase {
 
     public abstract MovieDao movies();

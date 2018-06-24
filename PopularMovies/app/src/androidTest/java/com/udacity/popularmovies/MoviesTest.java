@@ -66,7 +66,7 @@ public class MoviesTest {
         List<MovieDao.BaseMovie> popularMovieList = mMovieDatabase.movies().getPopularMovies();
         MovieDao.BaseMovie baseMovie = popularMovieList.get(random-1);
 
-        Movie movie = mMovieDatabase.movies().getPopularMovieById(random);
+        Movie movie = mMovieDatabase.movies().getMovieById(random);
 
         assertEquals(baseMovie.id, movie.id);
         assertEquals(String.format("TEST_ORIGINAL_TITLE_%d", baseMovie.id), movie.originalTitle);
@@ -84,7 +84,7 @@ public class MoviesTest {
         List<MovieDao.BaseMovie> topRatedMovieList = mMovieDatabase.movies().getTopRatedMovies();
         MovieDao.BaseMovie baseMovie = topRatedMovieList.get(random-1);
 
-        Movie movie = mMovieDatabase.movies().getTopRatedMovieById(random*2);
+        Movie movie = mMovieDatabase.movies().getMovieById(random*2);
 
         assertEquals(baseMovie.id, movie.id);
         assertEquals(String.format("TEST_ORIGINAL_TITLE_%d", baseMovie.id), movie.originalTitle);
