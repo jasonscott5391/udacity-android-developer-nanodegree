@@ -25,6 +25,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Pop
 
     private static final String TAG = MainActivity.class.getSimpleName();
     protected static final String INTENT_KEY_MOVIE_DB = "INTENT_KEY_MOVIE_DB";
+    private static final String GRID_CURRENT_POSITION = "grid_current_position";
+
+    private static int mCurrentPosition = 0;
 
     private MovieListViewModel mViewModel;
     private RecyclerView mRecyclerView;
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Pop
         mViewModel = ViewModelProviders.of(this).get(MovieListViewModel.class);
         mViewModel.getMoviesList().observe(MainActivity.this, movies -> {
             Log.d(TAG, "onCreate - Updating list of movies.");
+            mCurrentPosition = 0;
             mMoviesAdapter.swapMovies(movies);
         });
 
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Pop
     @Override
     protected void onResume() {
         super.onResume();
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String sortKey = getString(R.string.pref_movie_sort_key);
         String defaultSort = getString(R.string.pref_movie_sort_popular);
@@ -72,10 +77,29 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Pop
                 setTitle(R.string.top_rated_movies);
                 break;
 
+            case MovieSyncTask.FAVORITE_MOVIES:
+                setTitle(R.string.favorite_movies);
+                break;
+
             default:
                 setTitle(R.string.app_name);
                 break;
         }
+
+        mRecyclerView.smoothScrollToPosition(mCurrentPosition);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mCurrentPosition = mGridLayoutManager.findFirstVisibleItemPosition();
+        outState.putInt(GRID_CURRENT_POSITION, mCurrentPosition);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mCurrentPosition = savedInstanceState.getInt(GRID_CURRENT_POSITION);
     }
 
     @Override

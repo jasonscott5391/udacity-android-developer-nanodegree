@@ -52,6 +52,11 @@ public class MovieSyncIntentService extends IntentService {
             case MovieSyncTask.TOP_RATED_MOVIES:
                 MovieSyncTask.syncTopRatedMovies(movieDatabase.movies());
                 break;
+
+            case MovieSyncTask.FAVORITE_MOVIES:
+                MovieSyncTask.syncFavoriteMovies(movieDatabase.movies());
+                break;
+
             default:
                 throw new UnsupportedOperationException(String.format("Operation %s is unsupported!", preference));
         }

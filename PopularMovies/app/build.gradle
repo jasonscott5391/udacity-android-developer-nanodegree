@@ -25,13 +25,13 @@ android {
 
 dependencies {
     def support_version = "27.1.1"
-    def room_version = "1.1.0"
+    def room_version = "1.1.1"
     def arch_core = "1.1.1"
     def retrofit = "2.4.0"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support:appcompat-v7:$support_version"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation "com.android.support:recyclerview-v7:$support_version"
     implementation "com.android.support:preference-v7:$support_version"
     implementation 'com.squareup.picasso:picasso:2.71828'

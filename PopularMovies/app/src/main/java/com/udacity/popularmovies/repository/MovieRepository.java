@@ -6,12 +6,12 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.udacity.popularmovies.entity.Movie;
 import com.udacity.popularmovies.data.MovieDao;
 import com.udacity.popularmovies.data.MovieDatabase;
+import com.udacity.popularmovies.entity.FavoriteMovie;
+import com.udacity.popularmovies.entity.Movie;
 import com.udacity.popularmovies.entity.MovieReview;
 import com.udacity.popularmovies.entity.MovieVideo;
-import com.udacity.popularmovies.sync.MovieSyncTask;
 import com.udacity.popularmovies.sync.MovieSyncUtils;
 
 import java.util.List;
@@ -57,24 +57,12 @@ public class MovieRepository {
         MovieSyncUtils.startImmediateSync(context, preference);
     }
 
-    public static MutableLiveData<Movie> getMovieById(Context context, long id, String preference) {
+    public static MutableLiveData<Movie> getMovieById(Context context, long id) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
                 MovieDatabase movieDatabase = MovieDatabase.getInstance(context);
-                switch (preference) {
-                    case MovieSyncTask.POPULAR_MOVIES:
-                        sMovie.postValue(movieDatabase.movies().getPopularMovieById(id));
-                        break;
-
-                    case MovieSyncTask.TOP_RATED_MOVIES:
-                        sMovie.postValue(movieDatabase.movies().getTopRatedMovieById(id));
-                        break;
-
-                    default:
-                        throw new UnsupportedOperationException(String.format("Operation %s is unsupported!", preference));
-                }
-
+                sMovie.postValue(movieDatabase.movies().getMovieById(id));
                 return null;
             }
 
@@ -107,5 +95,58 @@ public class MovieRepository {
         }.execute();
 
         return sMovieReviewList;
+    }
+
+    public static void insertFavoriteMovie(Context context, FavoriteClickHandler favoriteClickHandler, long movieId) {
+        new AsyncTask<Void, Void, Void>() {
+
+            Long favoriteMovieId = null;
+            @Override
+            protected Void doInBackground(Void... voids) {
+                FavoriteMovie favoriteMovie = new FavoriteMovie();
+                favoriteMovie.id = movieId;
+
+                MovieDatabase movieDatabase = MovieDatabase.getInstance(context);
+                favoriteMovieId = movieDatabase.movies().insertFavoriteMovie(favoriteMovie);
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                if (favoriteMovieId != null) {
+                    favoriteClickHandler.onPostInsert(favoriteMovieId);
+                }
+            }
+        }.execute();
+    }
+
+    public static void deleteFavoriteMovie(Context context, FavoriteClickHandler favoriteClickHandler, long favoriteMovieId, long movieId) {
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                FavoriteMovie favoriteMovie = new FavoriteMovie();
+                favoriteMovie.favoriteMovieId = favoriteMovieId;
+                favoriteMovie.id = movieId;
+
+                MovieDatabase movieDatabase = MovieDatabase.getInstance(context);
+                movieDatabase.movies().deleteFavoriteMovie(favoriteMovie);
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                favoriteClickHandler.onPostDelete();
+            }
+        }.execute();
+    }
+
+    public interface FavoriteClickHandler {
+        void onPostInsert(long favoriteMovieId);
+        void onPostDelete();
     }
 }

@@ -1,10 +1,12 @@
 package com.udacity.popularmovies.data;
 
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
+import com.udacity.popularmovies.entity.FavoriteMovie;
 import com.udacity.popularmovies.entity.Movie;
 import com.udacity.popularmovies.entity.MovieReview;
 import com.udacity.popularmovies.entity.MovieVideo;
@@ -40,11 +42,17 @@ public interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertMovieReviews(List<MovieReview> movieReviewList);
 
-    @Query("SELECT * FROM " + Movie.MOVIES_TABLE_NAME + " WHERE " + Movie.COLUMN_MOVIE_DB_ID + " = :id")
-    Movie getPopularMovieById(long id);
+    @Insert
+    long insertFavoriteMovie(FavoriteMovie favoriteMovie);
 
-    @Query("SELECT * FROM " + Movie.MOVIES_TABLE_NAME + " WHERE " + Movie.COLUMN_MOVIE_DB_ID + " = :id")
-    Movie getTopRatedMovieById(long id);
+    @Query("SELECT "
+            + Movie.MOVIES_TABLE_NAME + ".*, "
+            + FavoriteMovie.FAVORITE_MOVIES_TABLE_NAME + "." + FavoriteMovie.COLUMN_FAVORITE_MOVIE_ID + " as favoriteMovieId"
+            + " FROM " + Movie.MOVIES_TABLE_NAME
+            + " LEFT JOIN " + FavoriteMovie.FAVORITE_MOVIES_TABLE_NAME
+            + " ON (" + FavoriteMovie.FAVORITE_MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID  + " = " + Movie.MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + ")"
+            + " WHERE " + Movie.MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + " = :id")
+    Movie getMovieById(long id);
 
     @Query("SELECT "
             + Movie.MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + " AS id, "
@@ -64,6 +72,15 @@ public interface MovieDao {
             + " ORDER BY " + TopRatedMovie.COLUMN_TOP_RATED_MOVIE_ID + " ASC")
     List<BaseMovie> getTopRatedMovies();
 
+    @Query("SELECT "
+            + Movie.MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + " AS id, "
+            + Movie.MOVIES_TABLE_NAME + "." + Movie.COLUMN_POSTER_PATH + " AS posterPath"
+            + " FROM " + FavoriteMovie.FAVORITE_MOVIES_TABLE_NAME
+            + " INNER JOIN " + Movie.MOVIES_TABLE_NAME
+            + " ON (" + Movie.MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + " = " + FavoriteMovie.FAVORITE_MOVIES_TABLE_NAME + "." + Movie.COLUMN_MOVIE_DB_ID + ")"
+            + " ORDER BY " + FavoriteMovie.COLUMN_FAVORITE_MOVIE_ID + " ASC")
+    List<BaseMovie> getFavoriteMovies();
+
 
     @Query("SELECT "
             + MovieVideo.COLUMN_YOUTUBE_KEY + ", "
@@ -78,6 +95,10 @@ public interface MovieDao {
             + " FROM " + MovieReview.MOVIE_REVIEWS_TABLE_NAME
             + " WHERE " + Movie.COLUMN_MOVIE_DB_ID + " = :id")
     List<MovieReview> getMovieReviews(long id);
+
+
+    @Delete
+    void deleteFavoriteMovie(FavoriteMovie favoriteMovie);
 
     class BaseMovie {
         public Long id;

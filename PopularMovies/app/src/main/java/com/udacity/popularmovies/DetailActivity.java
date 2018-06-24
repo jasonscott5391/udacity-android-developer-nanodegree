@@ -1,17 +1,25 @@
 package com.udacity.popularmovies;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.udacity.popularmovies.entity.Movie;
+import com.udacity.popularmovies.repository.MovieRepository;
 import com.udacity.popularmovies.utils.PopularMoviesUtils;
 import com.udacity.popularmovies.viewmodel.MovieReviewListViewModel;
 import com.udacity.popularmovies.viewmodel.MovieReviewListViewModelFactory;
@@ -27,10 +35,16 @@ import java.util.Locale;
 
 import static com.udacity.popularmovies.MainActivity.INTENT_KEY_MOVIE_DB;
 
-public class DetailActivity extends AppCompatActivity implements MovieVideosAdapter.MovieVideosClickHandler {
+public class DetailActivity extends AppCompatActivity implements MovieVideosAdapter.MovieVideosClickHandler,
+        MovieRepository.FavoriteClickHandler {
 
     private static final DateFormat fromDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private static final DateFormat toDateFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+
+    private static Long sMovieDbId = null;
+    private static Long sFavoriteMovieId = null;
+
+    private static MenuItem sFavoriteMenuItem;
 
     private MovieViewModel mMovieViewModel;
     private ImageView mPosterImageView;
@@ -127,6 +141,8 @@ public class DetailActivity extends AppCompatActivity implements MovieVideosAdap
             }
             mVoteAverageTextView.setText(String.format(Locale.getDefault(), "%d/10", movie.voteAverage.intValue()));
             mOverviewTextView.setText(movie.overview);
+            sFavoriteMovieId = movie.favoriteMovieId;
+            sMovieDbId = movie.id;
         }
 
     }
@@ -136,5 +152,75 @@ public class DetailActivity extends AppCompatActivity implements MovieVideosAdap
         Intent movieVideoIntent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(PopularMoviesUtils.buildYouTubeUrl(key)));
         startActivity(movieVideoIntent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.movie_details, menu);
+
+        sFavoriteMenuItem = menu.findItem(R.id.action_favorite);
+        toggleFavoriteMenuItem();
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_favorite:
+                Context context = getApplicationContext();
+
+                if (sFavoriteMovieId == null) {
+                    MovieRepository.insertFavoriteMovie(context, this, sMovieDbId);
+                } else {
+                    MovieRepository.deleteFavoriteMovie(context, this, sFavoriteMovieId, sMovieDbId);
+
+                }
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onPostInsert(long favoriteMovieId) {
+        refreshFavoriteMovies();
+        sFavoriteMovieId = favoriteMovieId;
+        toggleFavoriteMenuItem();
+        Toast.makeText(getApplicationContext(), String.format("%s Added to Favorites", getTitle()), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPostDelete() {
+        refreshFavoriteMovies();
+        sFavoriteMovieId = null;
+        toggleFavoriteMenuItem();
+        Toast.makeText(getApplicationContext(), String.format("%s Removed from Favorites", getTitle()), Toast.LENGTH_SHORT).show();
+    }
+
+    private void toggleFavoriteMenuItem() {
+        int favoriteButtonIconId = sFavoriteMovieId != null ? R.mipmap.ic_action_unfavorite : R.mipmap.ic_action_favorite;
+        int favoriteButtonTitleId = sFavoriteMovieId != null ? R.string.action_unfavorite : R.string.action_favorite;
+
+        sFavoriteMenuItem.setIcon(favoriteButtonIconId);
+        sFavoriteMenuItem.setTitle(getString(favoriteButtonTitleId));
+    }
+
+    private void refreshFavoriteMovies() {
+        Context context = getApplicationContext();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String sortKey = context.getString(R.string.pref_movie_sort_key);
+        String defaultSort = context.getString(R.string.pref_movie_sort_popular);
+        String sortPreference = sharedPreferences.getString(sortKey, defaultSort);
+
+        if (sortPreference.equalsIgnoreCase(getString(R.string.pref_movie_sort_favorites))) {
+            MovieRepository.updateMovies(context, sortPreference);
+        }
+
     }
 }
