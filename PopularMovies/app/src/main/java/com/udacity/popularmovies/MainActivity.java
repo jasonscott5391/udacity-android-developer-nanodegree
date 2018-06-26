@@ -92,7 +92,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Pop
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mCurrentPosition = mGridLayoutManager.findFirstVisibleItemPosition();
+        int currentPosition = mGridLayoutManager.findFirstVisibleItemPosition();
+        mCurrentPosition = currentPosition != -1 ? currentPosition : 0;
         outState.putInt(GRID_CURRENT_POSITION, mCurrentPosition);
     }
 
