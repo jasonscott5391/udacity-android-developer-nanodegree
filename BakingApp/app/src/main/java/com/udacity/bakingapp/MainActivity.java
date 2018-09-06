@@ -1,14 +1,15 @@
 package com.udacity.bakingapp;
 
+import android.arch.persistence.room.Room;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.udacity.bakingapp.data.RecipeDatabase;
 import com.udacity.bakingapp.entity.Ingredient;
 import com.udacity.bakingapp.entity.Recipe;
 import com.udacity.bakingapp.entity.Step;
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private RecipeAdapter mRecipeAdapter;
+    private RecipeDatabase mRecipeDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,34 +46,8 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        List<Recipe> recipeList = new ArrayList<>();
-        for (int i = 0; i < 15; i++) {
-            Recipe recipe = new Recipe();
-            recipe.id = (long) i + 1;
-            recipe.name = String.format("Test Recipe %s", i);
-            recipe.servings = i + 8;
-            recipe.ingredientList = new ArrayList<>();
-            for (int j = 0; j < 7 - i; j++) {
-                Ingredient ingredient = new Ingredient();
-                ingredient.quantity = Double.valueOf(String.format("15%s.0", i));
-                ingredient.measure = "G";
-                ingredient.ingredient = String.format("Test Ingredient %s", j + i);
-                recipe.ingredientList.add(ingredient);
-            }
-            recipe.stepList = new ArrayList<>();
-            for (int j = 0; j < 12 - i; j++) {
-                Step step = new Step();
-                step.id = (long) j + 1;
-                step.shortDescription = String.format("Test Short Description %s", j);
-                step.description = String.format("Test Description %s", j);
-                step.thumbnailUrl = "";
-                step.videoUrl = "";
-                recipe.stepList.add(step);
-            }
-            recipeList.add(recipe);
-        }
-
-        mRecipeAdapter = new RecipeAdapter(this, this, recipeList);
+        insertRecipes();
+        mRecipeAdapter = new RecipeAdapter(this, this, mRecipeDatabase.recipes().getRecipes());
         mRecyclerView.setAdapter(mRecipeAdapter);
     }
 
@@ -94,8 +70,48 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         return displayMetrics.widthPixels / 500;
     }
 
+    private void insertRecipes() {
+        mRecipeDatabase = Room.inMemoryDatabaseBuilder(this,
+                RecipeDatabase.class)
+                .allowMainThreadQueries()
+                .build();
+
+        List<Recipe> recipeList = new ArrayList<>();
+        for (int i = 0; i < 15; i++) {
+            Recipe recipe = new Recipe();
+            recipe.recipeId = (long) i + 1;
+            recipe.name = String.format("Test Recipe %s", i);
+            recipe.servings = i + 8;
+            List<Ingredient> ingredientList = new ArrayList<>();
+            for (int j = 0; j < 7 - i; j++) {
+                Ingredient ingredient = new Ingredient();
+                ingredient.recipeId = recipe.recipeId;
+                ingredient.quantity = Double.valueOf(String.format("15%s.0", i));
+                ingredient.measure = "G";
+                ingredient.ingredient = String.format("Test Ingredient %s", j + i);
+                ingredientList.add(ingredient);
+            }
+            mRecipeDatabase.recipes().insertIngredients(ingredientList);
+            List<Step> stepList = new ArrayList<>();
+            for (int j = 0; j < 12 - i; j++) {
+                Step step = new Step();
+                step.stepId = (long) j + 1;
+                step.recipeId = recipe.recipeId;
+                step.shortDescription = String.format("Test Short Description %s", j);
+                step.description = String.format("Test Description %s", j);
+                step.thumbnailUrl = "";
+                step.videoUrl = "";
+                stepList.add(step);
+            }
+            mRecipeDatabase.recipes().insertSteps(stepList);
+            recipeList.add(recipe);
+        }
+
+        mRecipeDatabase.recipes().insertRecipes(recipeList);
+    }
+
     @Override
     public void onClick(long id) {
-        Log.d(TAG, String.format("onClick - id:%s", id));
+        Log.d(TAG, String.format("onClick - recipeId:%s", id));
     }
 }

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.udacity.bakingapp.entity.Recipe;
+import com.udacity.bakingapp.entity.RecipeWrapper;
 
 import java.util.List;
 
@@ -17,11 +18,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     private final Context mContext;
     private final RecipeClickHandler mRecipeClickHandler;
-    private List<Recipe> mRecipeList;
+    private List<RecipeWrapper> mRecipeWrapperList;
 
-    public RecipeAdapter(Context context, RecipeClickHandler recipeClickHandler, List<Recipe> recipeList) {
+    public RecipeAdapter(Context context, RecipeClickHandler recipeClickHandler, List<RecipeWrapper> recipeList) {
         this.mContext = context;
-        this.mRecipeList = recipeList;
+        this.mRecipeWrapperList = recipeList;
         this.mRecipeClickHandler = recipeClickHandler;
     }
 
@@ -34,18 +35,18 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
-        Recipe recipe = mRecipeList.get(position);
-        holder.mRecipeNameTextView.setText(recipe.name);
-        holder.mRecipeNumServingsTextView.setText(String.format("%s Servings", recipe.servings));
-        holder.mRecipeNumStepsTextView.setText(String.format("%s Steps", recipe.stepList.size()));
+        RecipeWrapper recipeWrapper = mRecipeWrapperList.get(position);
+        holder.mRecipeNameTextView.setText(recipeWrapper.name);
+        holder.mRecipeNumServingsTextView.setText(String.format("%s Servings", recipeWrapper.servings));
+        holder.mRecipeNumStepsTextView.setText(String.format("%s Steps", recipeWrapper.stepList.size()));
     }
 
     @Override
     public int getItemCount() {
-        if (mRecipeList == null) {
+        if (mRecipeWrapperList == null) {
             return 0;
         }
-        return mRecipeList.size();
+        return mRecipeWrapperList.size();
     }
 
     public interface RecipeClickHandler {
@@ -71,7 +72,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
         @Override
         public void onClick(View v) {
-            mRecipeClickHandler.onClick(mRecipeList.get(getAdapterPosition()).id);
+            mRecipeClickHandler.onClick(mRecipeWrapperList.get(getAdapterPosition()).recipeId);
         }
     }
 }
