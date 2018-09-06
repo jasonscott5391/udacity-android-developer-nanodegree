@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">BakingApp</string>
+
+    <!-- For testing... -->
+    <string name="test_recipe_name">Nutella Pie</string>
+    <string name="test_num_servings">8 Servings</string>
+    <string name="test_num_steps">6 Steps</string>
+</resources>
