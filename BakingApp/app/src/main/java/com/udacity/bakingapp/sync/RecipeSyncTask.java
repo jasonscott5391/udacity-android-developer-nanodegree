@@ -73,7 +73,6 @@ public class RecipeSyncTask {
 
             RecipeRepository.getRecipeList().postValue(recipeDao.getRecipes());
 
-
         } catch (IOException e) {
             RecipeRepository.getRecipeList().postValue(null);
             Log.e(TAG, e.getMessage());
