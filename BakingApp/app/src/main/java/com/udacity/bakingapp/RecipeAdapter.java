@@ -49,6 +49,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         return mRecipeWrapperList.size();
     }
 
+    public void swapRecipes(List<RecipeWrapper> recipeWrapperList) {
+        this.mRecipeWrapperList = recipeWrapperList;
+        notifyDataSetChanged();
+     }
+
     public interface RecipeClickHandler {
         void onClick(long id);
     }

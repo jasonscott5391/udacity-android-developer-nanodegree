@@ -4,6 +4,8 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+
 import static com.udacity.bakingapp.entity.Recipe.RECIPES_TABLE_NAME;
 
 @Entity(tableName = RECIPES_TABLE_NAME)
@@ -11,12 +13,15 @@ public class Recipe {
 
     public static final String RECIPES_TABLE_NAME = "recipes";
     public static final String COLUMN_RECIPE_ID = "recipe_id";
-    public static final String COLUMN_RECIPE_NAME = "name";
-    public static final String COLUMN_RECIPE_SERVINGS = "servings";
-    public static final String COLUMN_RECIPE_IMAGE = "image";
+    private static final String COLUMN_RECIPE_NAME = "name";
+    private static final String COLUMN_RECIPE_SERVINGS = "servings";
+    private static final String COLUMN_RECIPE_IMAGE = "image";
+
+    private static final String SERIALIZED_RECIPE_ID = "id";
 
     @PrimaryKey
     @ColumnInfo(index = true, name = COLUMN_RECIPE_ID)
+    @SerializedName(SERIALIZED_RECIPE_ID)
     public Long recipeId;
 
     @ColumnInfo(name = COLUMN_RECIPE_NAME)
