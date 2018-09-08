@@ -1,7 +1,7 @@
 package com.udacity.bakingapp;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.arch.persistence.room.Room;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,15 +9,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MenuItem;
 
-import com.udacity.bakingapp.data.RecipeDatabase;
-import com.udacity.bakingapp.entity.Ingredient;
-import com.udacity.bakingapp.entity.Recipe;
-import com.udacity.bakingapp.entity.Step;
+import com.udacity.bakingapp.repository.RecipeRepository;
 import com.udacity.bakingapp.viewmodel.RecipeListViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeClickHandler {
 
@@ -30,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     private LinearLayoutManager mLayoutManager;
     private RecipeAdapter mRecipeAdapter;
     private RecipeListViewModel mRecipeListViewModel;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +52,15 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
             Log.d(TAG, "onCreate - Updating list of recipes.");
             sCurrentPosition = 0;
             mRecipeAdapter.swapRecipes(recipeWrapperList);
+            if (mSwipeRefreshLayout.isRefreshing()) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+        mSwipeRefreshLayout = findViewById(R.id.swipe_refresh);
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            Log.d(TAG, "onCreate - Swipe to refresh gesture.");
+            RecipeRepository.updateRecipes(this);
         });
     }
 
@@ -76,6 +83,16 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
         return displayMetrics.widthPixels / MIN_GRID_DEVICE_WIDTH;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh_recipes:
+                RecipeRepository.updateRecipes(this);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onClick(long id) {
