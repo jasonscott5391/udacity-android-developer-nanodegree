@@ -8,7 +8,6 @@ import android.arch.persistence.room.Transaction;
 
 import com.udacity.bakingapp.entity.Ingredient;
 import com.udacity.bakingapp.entity.Recipe;
-import com.udacity.bakingapp.entity.RecipeWrapper;
 import com.udacity.bakingapp.entity.Step;
 
 import java.util.List;
@@ -28,15 +27,18 @@ public interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertSteps(List<Step> stepList);
 
-
-    @Query("SELECT * FROM "
-            + Recipe.RECIPES_TABLE_NAME
-            + " WHERE " + Recipe.COLUMN_RECIPE_ID + " = :recipeId")
-    @Transaction
-    RecipeWrapper getRecipeById(long recipeId);
-
     @Query("SELECT * FROM "
             + Recipe.RECIPES_TABLE_NAME)
     @Transaction
-    List<RecipeWrapper> getRecipes();
+    List<Recipe> getRecipes();
+
+    @Query("SELECT * FROM "
+            + Ingredient.INGREDIENTS_TABLE_NAME
+            + " WHERE " + Recipe.COLUMN_RECIPE_ID + " = :recipeId")
+    List<Ingredient> getIngredients(long recipeId);
+
+    @Query("SELECT * FROM "
+            + Step.STEPS_TABLE_NAME
+            + " WHERE " + Recipe.COLUMN_RECIPE_ID + " = :recipeId")
+    List<Step> getSteps(long recipeId);
 }

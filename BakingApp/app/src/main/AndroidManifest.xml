@@ -12,7 +12,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <service
             android:name=".sync.RecipeSyncIntentService"
             android:exported="false" />
@@ -24,6 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".RecipeDetailActivity"
+            android:parentActivityName=".RecipeDetailActivity" />
     </application>
 
 </manifest>
