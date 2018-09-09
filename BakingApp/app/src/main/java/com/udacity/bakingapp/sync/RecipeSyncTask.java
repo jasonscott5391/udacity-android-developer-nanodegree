@@ -5,13 +5,14 @@ import android.util.Log;
 import com.udacity.bakingapp.data.RecipeDao;
 import com.udacity.bakingapp.entity.Ingredient;
 import com.udacity.bakingapp.entity.Recipe;
-import com.udacity.bakingapp.entity.RecipeWrapper;
 import com.udacity.bakingapp.entity.Step;
 import com.udacity.bakingapp.repository.RecipeRepository;
 import com.udacity.bakingapp.service.RecipeService;
+import com.udacity.bakingapp.service.RecipeWrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Response;
@@ -56,20 +57,27 @@ public class RecipeSyncTask {
 
                 // Assign recipe ID to each ingredient.
                 List<Ingredient> ingredientList = recipeWrapper.ingredientList;
+                recipe.stepCount = ingredientList.size();
                 for (Ingredient ingredient : ingredientList) {
                     ingredient.recipeId = recipeId;
                 }
-                recipeDao.insertIngredients(ingredientList);
+                long[] recipeIngredientRowsInserted = recipeDao.insertIngredients(ingredientList);
+                Log.d(TAG, String.format("syncRecipes - recipeIngredientRowsInserted.length: %s", recipeIngredientRowsInserted.length));
+                Log.d(TAG, String.format("syncRecipes - recipeIngredientRowsInserted: %s", Arrays.toString(recipeIngredientRowsInserted)));
 
                 // Assign recipe ID to each step.
                 List<Step> stepList = recipeWrapper.stepList;
                 for (Step step : stepList) {
                     step.recipeId = recipeId;
                 }
-                recipeDao.insertSteps(stepList);
+                long[] recipeStepRowsInserted = recipeDao.insertSteps(stepList);
+                Log.d(TAG, String.format("syncRecipes - recipeStepRowsInserted.length: %s", recipeStepRowsInserted.length));
+                Log.d(TAG, String.format("syncRecipes - recipeStepRowsInserted: %s", Arrays.toString(recipeStepRowsInserted)));
             }
 
-            recipeDao.insertRecipes(recipeList);
+            long[] recipeRowsInserted = recipeDao.insertRecipes(recipeList);
+            Log.d(TAG, String.format("syncRecipes - recipeRowsInserted.length: %s", recipeRowsInserted.length));
+            Log.d(TAG, String.format("syncRecipes - recipeRowsInserted: %s", Arrays.toString(recipeRowsInserted)));
 
             RecipeRepository.getRecipeList().postValue(recipeDao.getRecipes());
 

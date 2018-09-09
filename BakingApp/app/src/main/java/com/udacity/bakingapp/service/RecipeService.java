@@ -1,7 +1,5 @@
 package com.udacity.bakingapp.service;
 
-import com.udacity.bakingapp.entity.RecipeWrapper;
-
 import java.util.List;
 
 import retrofit2.Call;

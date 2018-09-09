@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.udacity.bakingapp.entity.Recipe;
-import com.udacity.bakingapp.entity.RecipeWrapper;
 
 import java.util.List;
 
@@ -18,11 +17,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     private final Context mContext;
     private final RecipeClickHandler mRecipeClickHandler;
-    private List<RecipeWrapper> mRecipeWrapperList;
+    private List<Recipe> mRecipeList;
 
-    public RecipeAdapter(Context context, RecipeClickHandler recipeClickHandler, List<RecipeWrapper> recipeList) {
+    public RecipeAdapter(Context context, RecipeClickHandler recipeClickHandler, List<Recipe> recipeList) {
         this.mContext = context;
-        this.mRecipeWrapperList = recipeList;
+        this.mRecipeList = recipeList;
         this.mRecipeClickHandler = recipeClickHandler;
     }
 
@@ -35,27 +34,27 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
-        RecipeWrapper recipeWrapper = mRecipeWrapperList.get(position);
-        holder.mRecipeNameTextView.setText(recipeWrapper.name);
-        holder.mRecipeNumServingsTextView.setText(String.format("%s Servings", recipeWrapper.servings));
-        holder.mRecipeNumStepsTextView.setText(String.format("%s Steps", recipeWrapper.stepList.size()));
+        Recipe recipe = mRecipeList.get(position);
+        holder.mRecipeNameTextView.setText(recipe.name);
+        holder.mRecipeNumServingsTextView.setText(String.format("%s Servings", recipe.servings));
+        holder.mRecipeNumStepsTextView.setText(String.format("%s Steps", recipe.stepCount));
     }
 
     @Override
     public int getItemCount() {
-        if (mRecipeWrapperList == null) {
+        if (mRecipeList == null) {
             return 0;
         }
-        return mRecipeWrapperList.size();
+        return mRecipeList.size();
     }
 
-    public void swapRecipes(List<RecipeWrapper> recipeWrapperList) {
-        this.mRecipeWrapperList = recipeWrapperList;
+    public void swapRecipes(List<Recipe> recipeWrapperList) {
+        this.mRecipeList = recipeWrapperList;
         notifyDataSetChanged();
      }
 
     public interface RecipeClickHandler {
-        void onClick(long id);
+        void onClickRecipe(long id, String name);
     }
 
     public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -77,7 +76,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
         @Override
         public void onClick(View v) {
-            mRecipeClickHandler.onClick(mRecipeWrapperList.get(getAdapterPosition()).recipeId);
+            Recipe recipe = mRecipeList.get(getAdapterPosition());
+            mRecipeClickHandler.onClickRecipe(recipe.recipeId, recipe.name);
         }
     }
 }

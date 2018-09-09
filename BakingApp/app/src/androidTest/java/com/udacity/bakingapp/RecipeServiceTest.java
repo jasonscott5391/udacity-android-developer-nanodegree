@@ -3,8 +3,8 @@ package com.udacity.bakingapp;
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.udacity.bakingapp.entity.RecipeWrapper;
 import com.udacity.bakingapp.service.RecipeService;
+import com.udacity.bakingapp.service.RecipeWrapper;
 
 import org.junit.Before;
 import org.junit.Rule;

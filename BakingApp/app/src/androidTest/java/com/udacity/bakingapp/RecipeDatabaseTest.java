@@ -2,7 +2,6 @@ package com.udacity.bakingapp;
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.arch.persistence.room.Room;
-import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -20,7 +19,7 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -72,6 +71,7 @@ public class RecipeDatabaseTest {
                 ingredient.ingredient = String.format("Test Ingredient %s", j + i);
                 ingredientList.add(ingredient);
             }
+            recipe.stepCount = ingredientList.size();
             mRecipeDatabase.recipes().insertIngredients(ingredientList);
             List<Step> stepList = new ArrayList<>();
             for (int j = 0; j < 12 - i; j++) {

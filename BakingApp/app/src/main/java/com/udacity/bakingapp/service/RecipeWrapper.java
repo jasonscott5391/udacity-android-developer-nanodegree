@@ -1,21 +1,29 @@
-package com.udacity.bakingapp.entity;
-
-import android.arch.persistence.room.Relation;
+package com.udacity.bakingapp.service;
 
 import com.google.gson.annotations.SerializedName;
+import com.udacity.bakingapp.entity.Ingredient;
+import com.udacity.bakingapp.entity.Step;
 
 import java.util.List;
 
-public class RecipeWrapper extends Recipe {
+public class RecipeWrapper {
 
     private static final String SERIALIZED_RECIPE_INGREDIENTS_LIST = "ingredients";
     private static final String SERIALIZED_RECIPE_STEPS_LIST = "steps";
+    private static final String SERIALIZED_RECIPE_ID = "id";
 
-    @Relation(parentColumn = COLUMN_RECIPE_ID, entityColumn = COLUMN_RECIPE_ID)
+    @SerializedName(SERIALIZED_RECIPE_ID)
+    public Long recipeId;
+
+    public String name;
+
+    public int servings;
+
+    public String image;
+
     @SerializedName(SERIALIZED_RECIPE_INGREDIENTS_LIST)
     public List<Ingredient> ingredientList;
 
-    @Relation(parentColumn = COLUMN_RECIPE_ID, entityColumn = COLUMN_RECIPE_ID)
     @SerializedName(SERIALIZED_RECIPE_STEPS_LIST)
     public List<Step> stepList;
 

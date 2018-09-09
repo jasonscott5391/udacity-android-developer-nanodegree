@@ -1,6 +1,7 @@
 package com.udacity.bakingapp;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +21,10 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int MIN_GRID_DEVICE_WIDTH = 500;
+
+    protected static final String INTENT_KEY_RECIPE_ID = "recipe_id";
+    protected static final String INTENT_KEY_RECIPE_NAME = "recipe_name";
+    private static final String LAYOUT_CURRENT_POSITION = "layout_current_position";
 
     private static int sCurrentPosition = 0;
 
@@ -62,6 +67,43 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
             Log.d(TAG, "onCreate - Swipe to refresh gesture.");
             RecipeRepository.updateRecipes(this);
         });
+
+        mRecyclerView.smoothScrollToPosition(sCurrentPosition);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        int currentPosition = mLayoutManager.findFirstVisibleItemPosition();
+        sCurrentPosition = currentPosition != -1 ? currentPosition : 0;
+        outState.putInt(LAYOUT_CURRENT_POSITION, sCurrentPosition);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        sCurrentPosition = savedInstanceState.getInt(LAYOUT_CURRENT_POSITION);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh_recipes:
+                RecipeRepository.updateRecipes(this);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClickRecipe(long id, String name) {
+        Log.d(TAG, String.format("onClickRecipe - recipeId:%s", id));
+        Intent recipeDetailIntent = new Intent(MainActivity.this, RecipeDetailActivity.class);
+        recipeDetailIntent.putExtra(INTENT_KEY_RECIPE_ID, id);
+        recipeDetailIntent.putExtra(INTENT_KEY_RECIPE_NAME, name);
+        startActivity(recipeDetailIntent);
     }
 
     private float determineDeviceSmallestWidth() {
@@ -81,21 +123,5 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     private int determineNumColumns() {
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         return displayMetrics.widthPixels / MIN_GRID_DEVICE_WIDTH;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.refresh_recipes:
-                RecipeRepository.updateRecipes(this);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onClick(long id) {
-        Log.d(TAG, String.format("onClick - recipeId:%s", id));
     }
 }

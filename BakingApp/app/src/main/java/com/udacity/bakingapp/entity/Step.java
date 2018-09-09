@@ -15,7 +15,7 @@ import static com.udacity.bakingapp.entity.Step.STEPS_TABLE_NAME;
 @Entity(tableName = STEPS_TABLE_NAME, indices = {@Index(value = {COLUMN_RECIPE_ID})}, primaryKeys = {COLUMN_STEP_ID, COLUMN_RECIPE_ID})
 public class Step {
 
-    static final String STEPS_TABLE_NAME = "steps";
+    public static final String STEPS_TABLE_NAME = "steps";
     static final String COLUMN_STEP_ID = "step_id";
     private static final String COLUMN_STEP_SHORT_DESCRIPTION = "short_description";
     private static final String COLUMN_STEP_DESCRIPTION = "description";
