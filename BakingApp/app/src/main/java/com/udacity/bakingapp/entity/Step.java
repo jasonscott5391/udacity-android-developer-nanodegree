@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Locale;
+
 import static com.udacity.bakingapp.entity.Recipe.COLUMN_RECIPE_ID;
 import static com.udacity.bakingapp.entity.Step.COLUMN_STEP_ID;
 import static com.udacity.bakingapp.entity.Step.STEPS_TABLE_NAME;
@@ -16,13 +18,15 @@ import static com.udacity.bakingapp.entity.Step.STEPS_TABLE_NAME;
 public class Step {
 
     public static final String STEPS_TABLE_NAME = "steps";
-    static final String COLUMN_STEP_ID = "step_id";
+    public static final String COLUMN_STEP_ID = "step_id";
     private static final String COLUMN_STEP_SHORT_DESCRIPTION = "short_description";
     private static final String COLUMN_STEP_DESCRIPTION = "description";
     private static final String COLUMN_STEP_VIDEO_URL = "video_url";
     private static final String COLUMN_STEP_THUMBNAIL_URL = "thumbnail_url";
 
     private static final String SERIALIZED_RECIPE_STEP_ID = "id";
+    private static final String SERIALIZED_RECIPE_VIDEO_URL = "videoURL";
+    private static final String SERIALIZED_RECIPE_THUMBNAIL_URL = "thumbnailURL";
 
     @NonNull
     @ColumnInfo(index = true, name = COLUMN_STEP_ID)
@@ -40,8 +44,21 @@ public class Step {
     public String description;
 
     @ColumnInfo(name = COLUMN_STEP_VIDEO_URL)
+    @SerializedName(SERIALIZED_RECIPE_VIDEO_URL)
     public String videoUrl;
 
     @ColumnInfo(name = COLUMN_STEP_THUMBNAIL_URL)
+    @SerializedName(SERIALIZED_RECIPE_THUMBNAIL_URL)
     public String thumbnailUrl;
+
+    public String toString() {
+        return String.format(Locale.getDefault(),
+                "[stepId:%d,recipeId:%d,shortDescription:%s,description:%s,videoUrl:%s,thumbnailUrl:%s]",
+                stepId,
+                recipeId,
+                shortDescription,
+                description,
+                videoUrl,
+                thumbnailUrl);
+    }
 }

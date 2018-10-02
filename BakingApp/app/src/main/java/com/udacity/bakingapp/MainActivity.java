@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     protected static final String INTENT_KEY_RECIPE_ID = "recipe_id";
     protected static final String INTENT_KEY_RECIPE_NAME = "recipe_name";
+    protected static final String INTENT_KEY_RECIPE_STEP_COUNT = "recipe_step_count";
     private static final String LAYOUT_CURRENT_POSITION = "layout_current_position";
 
     private static int sCurrentPosition = 0;
@@ -98,11 +99,12 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     }
 
     @Override
-    public void onClickRecipe(long id, String name) {
+    public void onClickRecipe(long id, String name, int stepCount) {
         Log.d(TAG, String.format("onClickRecipe - recipeId:%s", id));
         Intent recipeDetailIntent = new Intent(MainActivity.this, RecipeDetailActivity.class);
         recipeDetailIntent.putExtra(INTENT_KEY_RECIPE_ID, id);
         recipeDetailIntent.putExtra(INTENT_KEY_RECIPE_NAME, name);
+        recipeDetailIntent.putExtra(INTENT_KEY_RECIPE_STEP_COUNT, stepCount);
         startActivity(recipeDetailIntent);
     }
 

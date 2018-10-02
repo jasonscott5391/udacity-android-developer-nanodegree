@@ -1,5 +1,6 @@
 package com.udacity.bakingapp;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
@@ -21,11 +22,13 @@ import com.udacity.bakingapp.viewmodel.StepListViewModelFactory;
 import java.util.ArrayList;
 
 import static com.udacity.bakingapp.MainActivity.INTENT_KEY_RECIPE_ID;
+import static com.udacity.bakingapp.MainActivity.INTENT_KEY_RECIPE_NAME;
 
 
 public class RecipeStepsFragment extends Fragment implements StepAdapter.StepClickHandler, View.OnClickListener {
 
-    private static final String TAG = RecipeStepsFragment.class.getSimpleName();
+    protected static final String TAG = RecipeStepsFragment.class.getSimpleName();
+    public static final String INTENT_KEY_STEP_ID = "step_id";
     private static final String INGREDIENTS_VISIBILITY_KEY = "ingredients_visible";
 
     private ImageButton mExpandimageButton;
@@ -37,6 +40,9 @@ public class RecipeStepsFragment extends Fragment implements StepAdapter.StepCli
     private StepAdapter mStepAdapter;
     private IngredientListViewModel mIngredientListViewModel;
     private StepListViewModel mStepListViewModel;
+    private Long mRecipeId;
+    private String mRecipeName;
+    private OnRecipeStepSelectedListener mOnRecipeStepSelectedListener;
 
     public RecipeStepsFragment() {
     }
@@ -68,14 +74,19 @@ public class RecipeStepsFragment extends Fragment implements StepAdapter.StepCli
         mStepAdapter = new StepAdapter(context, this, new ArrayList<>());
         mStepsRecyclerView.setAdapter(mStepAdapter);
 
-        assert getArguments() != null;
-        long recipeId = getArguments().getLong(INTENT_KEY_RECIPE_ID, -1L);
+        Bundle bundle = getArguments();
+        if (bundle == null) {
+            bundle = getActivity().getIntent().getExtras();
+        }
 
-        IngredientListViewModelFactory ingredientListViewModelFactory = new IngredientListViewModelFactory(context, recipeId);
+        mRecipeId = bundle.getLong(INTENT_KEY_RECIPE_ID, -1L);
+        mRecipeName = bundle.getString(INTENT_KEY_RECIPE_NAME, getString(R.string.app_name));
+
+        IngredientListViewModelFactory ingredientListViewModelFactory = new IngredientListViewModelFactory(context, mRecipeId);
         mIngredientListViewModel = ViewModelProviders.of(this, ingredientListViewModelFactory).get(IngredientListViewModel.class);
         mIngredientListViewModel.getIngredientList().observe(this, ingredientList -> mIngredientAdapter.swapIngredients(ingredientList));
 
-        StepListViewModelFactory stepListViewModelFactory = new StepListViewModelFactory(context, recipeId);
+        StepListViewModelFactory stepListViewModelFactory = new StepListViewModelFactory(context, mRecipeId);
         mStepListViewModel = ViewModelProviders.of(this, stepListViewModelFactory).get(StepListViewModel.class);
         mStepListViewModel.getStepList().observe(this, stepList -> mStepAdapter.swapSteps(stepList));
 
@@ -101,8 +112,19 @@ public class RecipeStepsFragment extends Fragment implements StepAdapter.StepCli
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof RecipeDetailActivity) {
+            setOnRecipeStepSelectedListener((RecipeDetailActivity) context);
+        }
+    }
+
+    @Override
     public void onClickStep(long stepId) {
-        Log.d(TAG, String.format("onClickStep - stepId:%s", stepId));
+        Log.d(TAG, String.format("onClickStep - recipeId:%s, stepId:%s, mOnRecipeStepSelectedListener:%s", mRecipeId, stepId, mOnRecipeStepSelectedListener));
+        if (mOnRecipeStepSelectedListener != null) {
+            mOnRecipeStepSelectedListener.onRecipeStepSelected(mRecipeId, mRecipeName, stepId);
+        }
     }
 
     @Override
@@ -119,5 +141,13 @@ public class RecipeStepsFragment extends Fragment implements StepAdapter.StepCli
 
         mExpandimageButton.setImageResource(imageResourceId);
         mIngredientsRecyclerView.setVisibility(visibility);
+    }
+
+    public interface OnRecipeStepSelectedListener {
+        void onRecipeStepSelected(long recipeId, String bundle, long stepId);
+    }
+
+    public void setOnRecipeStepSelectedListener(OnRecipeStepSelectedListener onRecipeStepSelectedListener) {
+        this.mOnRecipeStepSelectedListener = onRecipeStepSelectedListener;
     }
 }

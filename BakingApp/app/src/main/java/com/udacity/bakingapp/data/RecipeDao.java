@@ -41,4 +41,10 @@ public interface RecipeDao {
             + Step.STEPS_TABLE_NAME
             + " WHERE " + Recipe.COLUMN_RECIPE_ID + " = :recipeId")
     List<Step> getSteps(long recipeId);
+
+    @Query("SELECT * FROM "
+            + Step.STEPS_TABLE_NAME
+            + " WHERE " + Recipe.COLUMN_RECIPE_ID + " = :recipeId"
+            + " AND " + Step.COLUMN_STEP_ID + " = :stepId")
+    Step getStepById(long recipeId, long stepId);
 }
