@@ -22,6 +22,7 @@ public class RecipeRepository {
     private static MutableLiveData<List<Recipe>> sRecipeList;
     private static MutableLiveData<List<Ingredient>> sIngredientList;
     private static MutableLiveData<List<Step>> sStepList;
+    private static MutableLiveData<Step> sStep;
 
     public static void init(@NonNull final Context context) {
         Log.d(TAG, "init()");
@@ -33,6 +34,7 @@ public class RecipeRepository {
         sRecipeList = new MutableLiveData<>();
         sIngredientList = new MutableLiveData<>();
         sStepList = new MutableLiveData<>();
+        sStep = new MutableLiveData<>();
 
         RecipeSyncUtils.startImmediateSync(context);
     }
@@ -74,6 +76,20 @@ public class RecipeRepository {
         }.execute();
 
         return sStepList;
+    }
+
+    public static MutableLiveData<Step> getStepById(@NonNull final Context context, long recipeId, long stepId) {
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                RecipeDatabase recipeDatabase = RecipeDatabase.getInstance(context);
+                sStep.postValue(recipeDatabase.recipes().getStepById(recipeId, stepId));
+                return null;
+            }
+        }.execute();
+
+        return sStep;
     }
 
 }

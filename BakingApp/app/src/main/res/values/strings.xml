@@ -8,8 +8,12 @@
     <string name="test_num_servings">8 Servings</string>
     <string name="test_num_steps">6 Steps</string>
     <string name="test_ingredient_text">2 CUPS Graham Cracker crumbs</string>
-    <string name="test_step_short_description">1. Preheat the oven to 350°F. Butter a 9\" deep dish pie pan.</string>
+    <string name="test_step_description">1. Preheat the oven to 350°F. Butter a 9\" deep dish pie pan.</string>
+    <string name="test_step_short_description">Starting prep</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="pause">Pause</string>
+    <string name="play">Play</string>
+    <string name="restart">Restart</string>
 </resources>

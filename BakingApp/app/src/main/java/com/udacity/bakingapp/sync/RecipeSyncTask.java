@@ -57,7 +57,6 @@ public class RecipeSyncTask {
 
                 // Assign recipe ID to each ingredient.
                 List<Ingredient> ingredientList = recipeWrapper.ingredientList;
-                recipe.stepCount = ingredientList.size();
                 for (Ingredient ingredient : ingredientList) {
                     ingredient.recipeId = recipeId;
                 }
@@ -67,6 +66,7 @@ public class RecipeSyncTask {
 
                 // Assign recipe ID to each step.
                 List<Step> stepList = recipeWrapper.stepList;
+                recipe.stepCount = stepList.size();
                 for (Step step : stepList) {
                     step.recipeId = recipeId;
                 }
