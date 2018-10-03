@@ -2,6 +2,7 @@ package com.udacity.bakingapp;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +17,8 @@ import com.udacity.bakingapp.repository.RecipeRepository;
 import com.udacity.bakingapp.viewmodel.RecipeListViewModel;
 
 import java.util.ArrayList;
+
+import static com.udacity.bakingapp.IngredientWidgetService.ACTION_INGREDIENT_WIDGET;
 
 public class MainActivity extends AppCompatActivity implements RecipeAdapter.RecipeClickHandler {
 
@@ -101,6 +104,20 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
     @Override
     public void onClickRecipe(long id, String name, int stepCount) {
         Log.d(TAG, String.format("onClickRecipe - recipeId:%s", id));
+
+        // Commit to shared preferences for widget.
+        SharedPreferences sharedPreferences = getSharedPreferences(IngredientWidgetService.class.getSimpleName(), MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong(INTENT_KEY_RECIPE_ID, id);
+        editor.putString(INTENT_KEY_RECIPE_NAME, name);
+        editor.apply();
+
+        // Create intent to update widget.
+        Intent widgetIntent = new Intent(this, IngredientWidgetService.class);
+        widgetIntent.setAction(ACTION_INGREDIENT_WIDGET);
+        startService(widgetIntent);
+
+        // Start recipe detail activity.
         Intent recipeDetailIntent = new Intent(MainActivity.this, RecipeDetailActivity.class);
         recipeDetailIntent.putExtra(INTENT_KEY_RECIPE_ID, id);
         recipeDetailIntent.putExtra(INTENT_KEY_RECIPE_NAME, name);

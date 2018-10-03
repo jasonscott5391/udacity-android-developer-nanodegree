@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.udacity.bakingapp.entity.Recipe;
 
 import java.util.List;
@@ -38,6 +39,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.mRecipeNameTextView.setText(recipe.name);
         holder.mRecipeNumServingsTextView.setText(String.format("%s Servings", recipe.servings));
         holder.mRecipeNumStepsTextView.setText(String.format("%s Steps", recipe.stepCount));
+        String imageUrl = recipe.image;
+        if (imageUrl != null
+                && !imageUrl.isEmpty()) {
+            Picasso.get().load(imageUrl).into(holder.mRecipeThumbnailImageView);
+        }
     }
 
     @Override
@@ -51,7 +57,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public void swapRecipes(List<Recipe> recipeWrapperList) {
         this.mRecipeList = recipeWrapperList;
         notifyDataSetChanged();
-     }
+    }
 
     public interface RecipeClickHandler {
         void onClickRecipe(long id, String name, int stepCount);

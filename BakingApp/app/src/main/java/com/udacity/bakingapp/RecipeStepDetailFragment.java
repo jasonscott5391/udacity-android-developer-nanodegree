@@ -42,9 +42,12 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 import com.udacity.bakingapp.entity.Step;
 import com.udacity.bakingapp.viewmodel.RecipeStepViewModel;
 import com.udacity.bakingapp.viewmodel.RecipeStepViewModelFactory;
+
+import java.io.IOException;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
@@ -137,6 +140,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
 
         if (mSimpleExoPlayer != null) {
             outState.putLong(INTENT_KEY_CURRENT_POSITION, mSimpleExoPlayer.getCurrentPosition());
+            mSimpleExoPlayer.setPlayWhenReady(false);
         }
     }
 
@@ -248,8 +252,15 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             String thumbnailUrl = step.thumbnailUrl;
             if (thumbnailUrl != null
                     && !thumbnailUrl.isEmpty()) {
-                // TODO (jasonscott) Set to thumbnailURL.
+                Picasso.get().load(thumbnailUrl).into(mPlayerPlaceholderImageView);
+                try {
+                    mSimpleExoPlayerView.setDefaultArtwork(Picasso.get().load(thumbnailUrl).get());
+                } catch (IOException e) {
+                    Log.e(TAG, String.format("bindRecipeStep - %s", e.getMessage()));
+                    mSimpleExoPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.drawable.web_hi_res_512));
+                }
             } else {
+
                 mSimpleExoPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(getResources(), R.drawable.web_hi_res_512));
             }
             initializePlayer(Uri.parse(videoUrl));
@@ -259,6 +270,11 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             releasePlayer();
             mSimpleExoPlayerView.setVisibility(View.GONE);
             mPlayerPlaceholderImageView.setVisibility(View.VISIBLE);
+            String thumbnailUrl = step.thumbnailUrl;
+            if (thumbnailUrl != null
+                    && !thumbnailUrl.isEmpty()) {
+                Picasso.get().load(thumbnailUrl).into(mPlayerPlaceholderImageView);
+            }
             if (!mIsDualPane
                     && orientation == ORIENTATION_LANDSCAPE) {
                 // If portrait.
