@@ -1,5 +1,11 @@
 apply plugin: 'java-library'
 
+sourceSets {
+    main.resources {
+        srcDir 'src/main/res'
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'

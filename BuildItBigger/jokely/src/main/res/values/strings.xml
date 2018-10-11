@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Jokely</string>
+    <string name="test_joke">Chuck Norris can unit test entire applications with a single assert.</string>
+</resources>
