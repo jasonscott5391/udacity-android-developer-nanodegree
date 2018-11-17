@@ -22,14 +22,19 @@
         <item name="colorPrimaryDark">@color/theme_primary_dark</item>
         <item name="colorAccent">@color/theme_accent</item>
         <item name="android:windowSharedElementEnterTransition">@transition/shared_image</item>
+        <item name="android:fitsSystemWindows">true</item>
     </style>
 
     <style name="MyTheme.Main" parent="@style/MyTheme">
-        <item name="android:windowExitTransition">@transition/grid_exit</item>
-        <item name="android:windowReenterTransition">@transition/grid_reenter</item>
+        <item name="android:windowExitTransition">@transition/grid_exit_reenter</item>
+        <item name="android:windowReenterTransition">@transition/grid_exit_reenter</item>
     </style>
 
-    <style name="MyTheme.Details" parent="@style/MyTheme">
+    <style name="MyTheme.CollapsingToolbarLayoutExpandedTextStyle" parent="MyTheme">
+        <item name="android:textColor">@android:color/transparent</item>
+        <item name="android:textSize">0sp</item>
     </style>
+
+    <style name="MyTheme.Details" parent="@style/MyTheme"></style>
 
 </resources>
