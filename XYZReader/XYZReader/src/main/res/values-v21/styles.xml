@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="MyTheme.Main" parent="@style/MyTheme">
+        <item name="android:windowExitTransition">@transition/grid_exit_reenter</item>
+        <item name="android:windowReenterTransition">@transition/grid_exit_reenter</item>
+    </style>
+
+    <style name="MyTheme.Main.Toolbar" parent="@style/MyTheme.Main">
+        <item name="android:elevation">@dimen/toolbar_elevation</item>
+    </style>
+
+    <style name="MyTheme.Details.FloatingActionButton" parent="@style/MyTheme.Details">
+        <item name="android:elevation">@dimen/fab_elevation</item>
+        <item name="android:stateListAnimator">@anim/fab_state_list_anim</item>
+    </style>
+</resources>
