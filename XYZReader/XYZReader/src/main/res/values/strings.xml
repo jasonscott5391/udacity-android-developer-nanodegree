@@ -11,6 +11,7 @@
 
     <string name="up">Up</string>
     <string name="transition_photo">transition_photo</string>
+    <string name="photo_content_description">Article\'s photo</string>
     
     <string name="test_article_title">Ebooks, Neither E, Nor Books</string>
     <string name="test_article_subtitle">Feb 12, 2004\nby Cory Doctorwow</string>

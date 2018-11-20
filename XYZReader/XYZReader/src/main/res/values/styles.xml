@@ -21,20 +21,19 @@
         <item name="colorPrimary">@color/theme_primary</item>
         <item name="colorPrimaryDark">@color/theme_primary_dark</item>
         <item name="colorAccent">@color/theme_accent</item>
-        <item name="android:windowSharedElementEnterTransition">@transition/shared_image</item>
         <item name="android:fitsSystemWindows">true</item>
+        <item name="android:alertDialogTheme">@style/MyTheme.Details</item>
     </style>
 
-    <style name="MyTheme.Main" parent="@style/MyTheme">
-        <item name="android:windowExitTransition">@transition/grid_exit_reenter</item>
-        <item name="android:windowReenterTransition">@transition/grid_exit_reenter</item>
-    </style>
+    <style name="MyTheme.Main" parent="@style/MyTheme" />
 
     <style name="MyTheme.CollapsingToolbarLayoutExpandedTextStyle" parent="MyTheme">
         <item name="android:textColor">@android:color/transparent</item>
         <item name="android:textSize">0sp</item>
     </style>
-
-    <style name="MyTheme.Details" parent="@style/MyTheme"></style>
-
+    <style name="MyTheme.Main.Title" parent="@style/TextAppearance.AppCompat.Subhead"/>
+    <style name="MyTheme.Details" parent="@style/MyTheme" />
+    <style name="MyTheme.Main.Toolbar" parent="@style/MyTheme.Main"/>
+    <style name="MyTheme.Details.FloatingActionButton" parent="@style/MyTheme.Main"/>
+    <style name="MyTheme.Main.SubTitle" parent="@style/TextAppearance.AppCompat.Body1"/>
 </resources>

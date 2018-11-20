@@ -11,5 +11,7 @@
     <dimen name="toolbar_elevation">4dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
     <dimen name="card_corner_radius">2dp</dimen>
+    <dimen name="card_margins">4dp</dimen>
+    <dimen name="thumbnail_margins">4dp</dimen>
 
 </resources>
