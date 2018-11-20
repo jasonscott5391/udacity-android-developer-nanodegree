@@ -1,10 +1,7 @@
 package com.example.xyzreader.ui;
 
 import android.app.Fragment;
-import android.app.LoaderManager;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -24,26 +21,32 @@ import android.widget.TextView;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
-import com.example.xyzreader.data.ArticleLoader;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import static com.example.xyzreader.data.ItemsContract.ItemsColumns.AUTHOR;
+import static com.example.xyzreader.data.ItemsContract.ItemsColumns.BODY;
+import static com.example.xyzreader.data.ItemsContract.ItemsColumns.PHOTO_URL;
+import static com.example.xyzreader.data.ItemsContract.ItemsColumns.PUBLISHED_DATE;
+import static com.example.xyzreader.data.ItemsContract.ItemsColumns.TITLE;
+
 /**
  * A fragment representing a single Article detail screen. This fragment is
  * either contained in a {@link ArticleListActivity} in two-pane mode (on
  * tablets) or a {@link ArticleDetailActivity} on handsets.
  */
-public class ArticleDetailFragment extends Fragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String TAG = "ArticleDetailFragment";
+public class ArticleDetailFragment extends Fragment {
+    private static final String TAG = ArticleDetailFragment.class.getSimpleName();
 
-    public static final String ARG_ITEM_ID = "item_id";
+    public String mPublishedDate;
+    public String mTitle;
+    public String mAuthor;
+    public String mBody;
+    public String mPhotoUrl;
 
-    private Cursor mCursor;
-    private long mItemId;
     private View mRootView;
     private ImageView mPhotoView;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
@@ -62,9 +65,17 @@ public class ArticleDetailFragment extends Fragment implements
     public ArticleDetailFragment() {
     }
 
-    public static ArticleDetailFragment newInstance(long itemId) {
+    public static ArticleDetailFragment newInstance(String publishedDate,
+                                                    String title,
+                                                    String author,
+                                                    String body,
+                                                    String photoUrl) {
         Bundle arguments = new Bundle();
-        arguments.putLong(ARG_ITEM_ID, itemId);
+        arguments.putString(PUBLISHED_DATE, publishedDate);
+        arguments.putString(TITLE, title);
+        arguments.putString(AUTHOR, author);
+        arguments.putString(BODY, body);
+        arguments.putString(PHOTO_URL, photoUrl);
         ArticleDetailFragment fragment = new ArticleDetailFragment();
         fragment.setArguments(arguments);
         return fragment;
@@ -74,22 +85,15 @@ public class ArticleDetailFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            mItemId = getArguments().getLong(ARG_ITEM_ID);
-        }
+        Bundle bundle = getArguments();
+        mPublishedDate = bundle.getString(PUBLISHED_DATE);
+        mTitle = bundle.getString(TITLE);
+        mAuthor = bundle.getString(AUTHOR);
+        mBody = bundle.getString(BODY);
+        mPhotoUrl = bundle.getString(PHOTO_URL);
+
 
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // In support library r8, calling initLoader for a fragment in a FragmentPagerAdapter in
-        // the fragment's onCreate may cause the same LoaderManager to be dealt to multiple
-        // fragments because their mIndex is -1 (haven't been added to the activity yet). Thus,
-        // we do this in onActivityCreated.
-        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -116,7 +120,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     private Date parsePublishedDate() {
         try {
-            String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
+            String date = mPublishedDate;
             return dateFormat.parse(date);
         } catch (ParseException ex) {
             Log.e(TAG, ex.getMessage());
@@ -138,11 +142,11 @@ public class ArticleDetailFragment extends Fragment implements
 
         bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
-        if (mCursor != null) {
+        if (mPublishedDate != null) {
             mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);
-            String articleTitle = mCursor.getString(ArticleLoader.Query.TITLE);
+            String articleTitle = mTitle;
             titleView.setText(articleTitle);
             mCollapsingToolbarLayout.setTitle(articleTitle);
             Date publishedDate = parsePublishedDate();
@@ -153,18 +157,18 @@ public class ArticleDetailFragment extends Fragment implements
                                 System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
                                 DateUtils.FORMAT_ABBREV_ALL).toString()
                                 + " by "
-                                + mCursor.getString(ArticleLoader.Query.AUTHOR)));
+                                + mAuthor));
 
             } else {
                 // If date is before 1902, just show the string
                 bylineView.setText(Html.fromHtml(
                         outputFormat.format(publishedDate) + " by "
-                                + mCursor.getString(ArticleLoader.Query.AUTHOR)));
+                                + mAuthor));
 
             }
-            bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
+            bodyView.setText(Html.fromHtml(mBody.replaceAll("(\r\n|\n)", "<br />")));
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
-                    .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
+                    .get(mPhotoUrl, new ImageLoader.ImageListener() {
                         @Override
                         public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
                             Bitmap bitmap = imageContainer.getBitmap();
@@ -177,6 +181,7 @@ public class ArticleDetailFragment extends Fragment implements
                         public void onErrorResponse(VolleyError volleyError) {
 
                         }
+
                     });
         } else {
             mRootView.setVisibility(View.GONE);
@@ -184,35 +189,5 @@ public class ArticleDetailFragment extends Fragment implements
             bylineView.setText("N/A");
             bodyView.setText("N/A");
         }
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return ArticleLoader.newInstanceForItemId(getActivity(), mItemId);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        if (!isAdded()) {
-            if (cursor != null) {
-                cursor.close();
-            }
-            return;
-        }
-
-        mCursor = cursor;
-        if (mCursor != null && !mCursor.moveToFirst()) {
-            Log.e(TAG, "Error reading item detail cursor");
-            mCursor.close();
-            mCursor = null;
-        }
-
-        bindViews();
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        mCursor = null;
-        bindViews();
     }
 }
